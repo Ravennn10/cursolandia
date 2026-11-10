@@ -1,0 +1,9 @@
+#Credenciales reales(NO SUBIR al repositorio)
+config/config.php
+
+
+#Editor y logs
+.vscode/
+*.log
+
+
