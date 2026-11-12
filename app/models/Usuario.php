@@ -23,7 +23,7 @@ class Usuario {
         $resultado = mysqli_stmt_get_result($stmt);  //resultado de la consulta
         $usuario = mysqli_fetch_assoc($resultado);  //array asociativo de lo que recibió
         
-        mysqli_stmt_close($stmt);   //cierra proceso (para no usar RAM)
+        mysqli_stmt_close($stmt);   //cierra proceso (libera RAM)
         return $usuario;
     }
 
