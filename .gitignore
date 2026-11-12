@@ -6,4 +6,7 @@ config/config.php
 .vscode/
 *.log
 
+#archivos no visibles en repositorio
+storage/material/*
+storage/pagos/*
 

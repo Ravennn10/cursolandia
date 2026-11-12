@@ -1,308 +1,623 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
 --
--- Base de datos: cursolandia
---
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 11-11-2026 a las 16:35:23
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
--- Configuración inicial
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "-03:00";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
--- * * * ROLES * * * 
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
--- Tabla de roles
-CREATE TABLE roles (
-    id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    nombre VARCHAR(20) NOT NULL,
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_roles_nombre (nombre)
+--
+-- Base de datos: `cursolandia`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cursos`
+--
+
+CREATE TABLE `cursos` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `creador_id` int(10) UNSIGNED NOT NULL,
+  `titulo` varchar(150) NOT NULL,
+  `descripcion` text NOT NULL,
+  `costo` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `cupo` smallint(5) UNSIGNED DEFAULT NULL,
+  `es_publico` tinyint(1) NOT NULL DEFAULT 1,
+  `fecha_inicio` date NOT NULL,
+  `fecha_fin` date NOT NULL,
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp()
+) ;
+
+--
+-- Volcado de datos para la tabla `cursos`
+--
+
+INSERT INTO `cursos` (`id`, `creador_id`, `titulo`, `descripcion`, `costo`, `cupo`, `es_publico`, `fecha_inicio`, `fecha_fin`, `fecha_creacion`) VALUES
+(1, 2, 'Introducción a PHP y MySQL', 'Aprendé a crear aplicaciones web dinámicas con PHP, MySQL y Bootstrap desde cero.', 0.00, 30, 1, '2026-10-01', '2027-03-31', '2026-11-11 16:14:46'),
+(2, 2, 'Diseño de interfaces con Bootstrap', 'Curso práctico para maquetar sitios responsivos usando Bootstrap 5.', 15000.00, 20, 1, '2026-11-01', '2027-02-28', '2026-11-11 16:14:46'),
+(3, 3, 'Fotografía digital desde cero', 'Conceptos básicos de cámara, composición y edición. Curso privado por invitación.', 0.00, NULL, 0, '2026-11-01', '2027-01-31', '2026-11-11 16:14:46'),
+(4, 3, 'Inglés para programadores', 'Vocabulario técnico y lectura de documentación en inglés.', 0.00, 15, 1, '2026-11-01', '2027-04-30', '2026-11-11 16:14:46'),
+(5, 4, 'Marketing digital para emprendedores', 'Estrategias de redes sociales y publicidad online para pequeños negocios.', 8000.00, 10, 1, '2026-12-01', '2027-03-01', '2026-11-11 16:14:46'),
+(6, 5, 'Excel básico', 'Fórmulas, tablas dinámicas y gráficos para el trabajo diario.', 0.00, NULL, 1, '2026-03-01', '2026-06-30', '2026-11-11 16:14:46');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `curso_archivos`
+--
+
+CREATE TABLE `curso_archivos` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `curso_id` int(10) UNSIGNED NOT NULL,
+  `nombre_archivo` varchar(255) NOT NULL,
+  `ruta_archivo` varchar(255) NOT NULL,
+  `peso_bytes` int(10) UNSIGNED NOT NULL,
+  `fecha_subida` datetime NOT NULL DEFAULT current_timestamp()
+) ;
+
+--
+-- Volcado de datos para la tabla `curso_archivos`
+--
+
+INSERT INTO `curso_archivos` (`id`, `curso_id`, `nombre_archivo`, `ruta_archivo`, `peso_bytes`, `fecha_subida`) VALUES
+(1, 1, 'clase1-introduccion.pdf', 'storage/material/1/clase1-introduccion.pdf', 1048576, '2026-11-11 16:19:03'),
+(2, 1, 'ejercicios-sql.pdf', 'storage/material/1/ejercicios-sql.pdf', 524288, '2026-11-11 16:19:03'),
+(3, 2, 'guia-bootstrap.pdf', 'storage/material/2/guia-bootstrap.pdf', 2097152, '2026-11-11 16:19:03');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `curso_etiquetas`
+--
+
+CREATE TABLE `curso_etiquetas` (
+  `curso_id` int(10) UNSIGNED NOT NULL,
+  `etiqueta_id` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- INSERT de roles
-INSERT INTO roles (nombre) VALUES ('usuario'), ('admin');  -- usuario ID = 1 , admin ID = 2
+--
+-- Volcado de datos para la tabla `curso_etiquetas`
+--
 
+INSERT INTO `curso_etiquetas` (`curso_id`, `etiqueta_id`) VALUES
+(1, 1),
+(1, 5),
+(2, 2),
+(3, 2),
+(3, 3),
+(4, 1),
+(4, 4),
+(5, 3);
 
--- * * * PLANES * * * 
+-- --------------------------------------------------------
 
--- Tabla de planes
-CREATE TABLE planes (
-    id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    nombre VARCHAR(20) NOT NULL,
-    max_cursos_activos SMALLINT UNSIGNED NULL,       -- NULL = sin limite
-    max_inscripciones_activas SMALLINT UNSIGNED NULL,
-    max_archivos_por_curso SMALLINT UNSIGNED NULL,
-    max_bytes_por_archivo INT UNSIGNED NULL,
-    max_bytes_total_cursos INT UNSIGNED NULL,
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_planes_nombre (nombre)
+--
+-- Estructura de tabla para la tabla `etiquetas`
+--
+
+CREATE TABLE `etiquetas` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- INSERT de planes
-INSERT INTO planes (nombre, max_cursos_activos, max_inscripciones_activas, max_archivos_por_curso, max_bytes_por_archivo, max_bytes_total_cursos) 
-VALUES ('gratuito', 3, 3, 5, 5242880, 10485760) , -- 5MB por archivo - 10MB en total   -- ID = 1
-('pro', NULL, NULL, NULL, NULL, NULL);  -- valores NULL = no tiene limite              -- ID = 2
+--
+-- Volcado de datos para la tabla `etiquetas`
+--
 
+INSERT INTO `etiquetas` (`id`, `nombre`) VALUES
+(5, 'Bases de Datos'),
+(2, 'Diseño'),
+(4, 'Idiomas'),
+(3, 'Marketing'),
+(1, 'Programacion');
 
--- * * * USUARIOS * * *
+-- --------------------------------------------------------
 
--- Tabla de usuarios
-CREATE TABLE usuarios(
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    rol_id TINYINT UNSIGNED NOT NULL DEFAULT 1,
-    plan_id TINYINT UNSIGNED NOT NULL DEFAULT 1,
-    nombre VARCHAR(100) NOT NULL,                      
-    apellido VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    antecedentes TEXT NULL,
-    imagen_perfil VARCHAR(255),  -- ruta de la imagen
-    fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    plan_vence_en DATE NULL,  -- solo para plan 'pro'
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_usuarios_email (email),
-    KEY idx_usuarios_rol (rol_id),
-    KEY idx_usuarios_plan (plan_id),
+--
+-- Estructura de tabla para la tabla `inscripciones`
+--
 
-    -- FK a rol y plan
-    CONSTRAINT fk_usuarios_rol FOREIGN KEY (rol_id) REFERENCES roles(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT fk_usuarios_plan FOREIGN KEY (plan_id) REFERENCES planes(id) ON UPDATE CASCADE ON DELETE RESTRICT
-
+CREATE TABLE `inscripciones` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `curso_id` int(10) UNSIGNED NOT NULL,
+  `usuario_id` int(10) UNSIGNED NOT NULL,
+  `estado` enum('pendiente','confirmada','cancelada') NOT NULL DEFAULT 'confirmada',
+  `fecha_inscripcion` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- INSERT de usuarios
+--
+-- Volcado de datos para la tabla `inscripciones`
+--
 
--- usuario gratuito
-INSERT INTO usuarios (rol_id, plan_id, nombre, apellido, email, password_hash) 
-VALUES (1, 1, 'ABRIL', 'PAEZ CUELLO', 'abrilcuello31@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+INSERT INTO `inscripciones` (`id`, `curso_id`, `usuario_id`, `estado`, `fecha_inscripcion`) VALUES
+(1, 1, 3, 'confirmada', '2026-11-11 16:22:34'),
+(2, 1, 4, 'confirmada', '2026-11-11 16:22:34'),
+(3, 1, 5, 'confirmada', '2026-11-11 16:22:34'),
+(4, 2, 2, 'pendiente', '2026-11-11 16:22:34'),
+(5, 2, 5, 'confirmada', '2026-11-11 16:22:34'),
+(6, 3, 3, 'confirmada', '2026-11-11 16:22:34'),
+(7, 4, 2, 'confirmada', '2026-11-11 16:22:34'),
+(8, 4, 4, 'confirmada', '2026-11-11 16:22:34'),
+(9, 5, 2, 'confirmada', '2026-11-11 16:33:05');
 
--- usuario pro
-INSERT INTO usuarios (rol_id, plan_id, nombre, apellido, email, password_hash, plan_vence_en) 
-VALUES (1, 2, 'ABRIL', 'PRO', 'abrilHOLA@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2026-12-31');
+-- --------------------------------------------------------
 
-INSERT INTO usuarios (rol_id, nombre, apellido, email, password_hash) 
-VALUES (2, 'ADMIN', 'SYSTEM', 'admin1@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+--
+-- Estructura de tabla para la tabla `notificaciones`
+--
 
--- '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi' = '12345' con hash de bcrypt
+CREATE TABLE `notificaciones` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `usuario_id` int(10) UNSIGNED NOT NULL,
+  `actor_id` int(10) UNSIGNED DEFAULT NULL,
+  `curso_id` int(10) UNSIGNED NOT NULL,
+  `pregunta_id` int(10) UNSIGNED DEFAULT NULL,
+  `tipo` enum('pregunta_nueva','respuesta_nueva','pregunta_cerrada','pregunta_eliminada') NOT NULL,
+  `mensaje` varchar(255) NOT NULL,
+  `leida` tinyint(1) NOT NULL DEFAULT 0,
+  `fecha` datetime NOT NULL DEFAULT current_timestamp()
+) ;
 
+--
+-- Volcado de datos para la tabla `notificaciones`
+--
 
--- * * * ETIQUETAS * * * 
+INSERT INTO `notificaciones` (`id`, `usuario_id`, `actor_id`, `curso_id`, `pregunta_id`, `tipo`, `mensaje`, `leida`, `fecha`) VALUES
+(1, 1, 4, 1, 1, 'pregunta_nueva', 'Martín Rojas hizo una pregunta nueva en \"Introducción a PHP y MySQL\".', 1, '2026-11-11 16:27:55'),
+(2, 3, 4, 1, 1, 'pregunta_nueva', 'Martín Rojas hizo una pregunta nueva en \"Introducción a PHP y MySQL\".', 0, '2026-11-11 16:27:55'),
+(3, 5, 4, 1, 1, 'pregunta_nueva', 'Martín Rojas hizo una pregunta nueva en \"Introducción a PHP y MySQL\".', 0, '2026-11-11 16:27:55'),
+(4, 4, 1, 1, 1, 'respuesta_nueva', 'Tu pregunta \"¿Diferencia entre mysqli y PDO?\" tiene una respuesta nueva.', 1, '2026-11-11 16:27:55'),
+(5, 4, 5, 1, 1, 'respuesta_nueva', 'Sofía Díaz respondió en \"¿Diferencia entre mysqli y PDO?\".', 0, '2026-11-11 16:27:55'),
+(6, 1, 5, 1, 1, 'respuesta_nueva', 'Sofía Díaz respondió en \"¿Diferencia entre mysqli y PDO?\".', 1, '2026-11-11 16:27:55'),
+(7, 4, 1, 1, 1, 'pregunta_cerrada', 'La pregunta \"¿Diferencia entre mysqli y PDO?\" fue cerrada con una respuesta aceptada.', 0, '2026-11-11 16:27:55'),
+(8, 5, 1, 1, 1, 'pregunta_cerrada', 'La pregunta \"¿Diferencia entre mysqli y PDO?\" fue cerrada con una respuesta aceptada.', 0, '2026-11-11 16:27:55');
 
--- Tabla de etiquetas
-CREATE TABLE etiquetas(
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    nombre VARCHAR(50) NOT NULL,
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_etiquetas_nombre (nombre)
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `planes`
+--
+
+CREATE TABLE `planes` (
+  `id` tinyint(3) UNSIGNED NOT NULL,
+  `nombre` varchar(20) NOT NULL,
+  `max_cursos_activos` smallint(5) UNSIGNED DEFAULT NULL,
+  `max_inscripciones_activas` smallint(5) UNSIGNED DEFAULT NULL,
+  `max_archivos_por_curso` smallint(5) UNSIGNED DEFAULT NULL,
+  `max_bytes_por_archivo` int(10) UNSIGNED DEFAULT NULL,
+  `max_bytes_total_cursos` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- INSERT de etiquetas
-INSERT INTO etiquetas (nombre) VALUES ('Programacion'), ('Diseño');
+--
+-- Volcado de datos para la tabla `planes`
+--
 
+INSERT INTO `planes` (`id`, `nombre`, `max_cursos_activos`, `max_inscripciones_activas`, `max_archivos_por_curso`, `max_bytes_por_archivo`, `max_bytes_total_cursos`) VALUES
+(1, 'gratuito', 3, 3, 5, 5242880, 10485760),
+(2, 'pro', NULL, NULL, NULL, NULL, NULL);
 
--- * * * USUARIO_INTERESES * * * (usuarios N:M etiquetas)
+-- --------------------------------------------------------
 
--- Tabla de usuarios_intereses
-CREATE TABLE usuarios_intereses(
-    usuario_id INT UNSIGNED NOT NULL,
-    etiqueta_id INT UNSIGNED NOT NULL,
-    PRIMARY KEY (usuario_id, etiqueta_id),
-    KEY idx_ui_etiqueta(etiqueta_id),
-    -- FK a usuarios y etiquetas
-    CONSTRAINT fk_ui_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-    CONSTRAINT fk_ui_etiqueta FOREIGN KEY (etiqueta_id) REFERENCES etiquetas(id) ON DELETE CASCADE
+--
+-- Estructura de tabla para la tabla `preguntas`
+--
+
+CREATE TABLE `preguntas` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `curso_id` int(10) UNSIGNED NOT NULL,
+  `autor_id` int(10) UNSIGNED NOT NULL,
+  `titulo` varchar(200) NOT NULL,
+  `contenido` text NOT NULL,
+  `destacada` tinyint(1) NOT NULL DEFAULT 0,
+  `respuesta_aceptada_id` int(10) UNSIGNED DEFAULT NULL,
+  `fecha_creada` datetime NOT NULL DEFAULT current_timestamp()
+) ;
+
+--
+-- Volcado de datos para la tabla `preguntas`
+--
+
+INSERT INTO `preguntas` (`id`, `curso_id`, `autor_id`, `titulo`, `contenido`, `destacada`, `respuesta_aceptada_id`, `fecha_creada`) VALUES
+(1, 1, 4, '¿Diferencia entre mysqli y PDO?', '¿Cuál conviene usar en el trabajo integrador y por qué?', 0, 3, '2026-11-11 16:24:02'),
+(2, 1, 5, '¿Cómo evito la inyección SQL?', 'Quiero asegurarme de que mi formulario de login sea seguro.', 1, NULL, '2026-11-11 16:24:02'),
+(3, 2, 5, '¿Qué versión de Bootstrap usamos?', '¿Trabajamos con la versión 5 o con la 4?', 0, NULL, '2026-11-11 16:24:02'),
+(4, 4, 1, '¿Las clases quedan grabadas?', 'Me gustaría poder repasar el material después de cada clase.', 0, NULL, '2026-11-11 16:24:02');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `respuestas`
+--
+
+CREATE TABLE `respuestas` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `pregunta_id` int(10) UNSIGNED NOT NULL,
+  `autor_id` int(10) UNSIGNED NOT NULL,
+  `contenido` text NOT NULL,
+  `es_aceptada` tinyint(1) NOT NULL DEFAULT 0,
+  `fecha_creada` datetime NOT NULL DEFAULT current_timestamp(),
+  `fecha_editada` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- INSERT de usuarios_intereses
+--
+-- Volcado de datos para la tabla `respuestas`
+--
 
+INSERT INTO `respuestas` (`id`, `pregunta_id`, `autor_id`, `contenido`, `es_aceptada`, `fecha_creada`, `fecha_editada`) VALUES
+(1, 1, 1, 'Ambas sirven. Para esta materia te conviene mysqli procedural.', 0, '2026-11-11 16:25:36', NULL),
+(2, 1, 5, 'Yo también uso mysqli, es lo que vemos en clase.', 0, '2026-11-11 16:25:36', NULL),
+(3, 1, 1, 'Exacto, usá mysqli con consultas preparadas.', 0, '2026-11-11 16:25:36', NULL),
+(4, 2, 1, 'Usá siempre consultas preparadas con mysqli_prepare.', 0, '2026-11-11 16:25:36', NULL),
+(5, 2, 4, 'Y nunca concatenes variables dentro del SQL.', 0, '2026-11-11 16:25:36', NULL),
+(6, 3, 3, 'Usamos Bootstrap 5, la versión actual.', 0, '2026-11-11 16:25:36', NULL),
+(7, 4, 4, 'Sí, las grabaciones se suben al final de cada semana.', 0, '2026-11-11 16:25:36', NULL);
 
--- * * * SOLICITUDES_PRO * * * (aviso de pago con comprobante adjunto)
+-- --------------------------------------------------------
 
--- Tabla de solicitudes_pro
-CREATE TABLE solicitudes_pro (
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    usuario_id INT UNSIGNED NOT NULL,
-    mensaje TEXT NOT NULL,
-    adjunto_ruta VARCHAR(255) NULL,
-    estado ENUM('pendiente', 'aprobado', 'rechazado') NOT NULL DEFAULT 'pendiente',
-    admin_id INT UNSIGNED NULL,   -- id del admin que atendió la solicitud
-    fecha_vencimiento DATE NULL,
-    fecha_solicitud DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_sp_usuario (usuario_id),
-    KEY idx_sp_estado (estado),
-    KEY idx_sp_admin (admin_id),
-    -- FK a usuarios
-    CONSTRAINT fk_sp_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-    CONSTRAINT fk_sp_admin FOREIGN KEY (admin_id) REFERENCES usuarios(id) ON DELETE SET NULL
+--
+-- Estructura de tabla para la tabla `roles`
+--
+
+CREATE TABLE `roles` (
+  `id` tinyint(3) UNSIGNED NOT NULL,
+  `nombre` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- INSERT de solicitudes_pro
+--
+-- Volcado de datos para la tabla `roles`
+--
 
+INSERT INTO `roles` (`id`, `nombre`) VALUES
+(2, 'admin'),
+(1, 'usuario');
 
--- * * * CURSOS * * * 
+-- --------------------------------------------------------
 
--- Tabla de cursos
-CREATE TABLE cursos (
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    creador_id INT UNSIGNED NOT NULL,
-    titulo VARCHAR(150) NOT NULL,
-    descripcion TEXT NOT NULL,
-    costo DECIMAL(10,2) NOT NULL DEFAULT 0.00,  -- 0 = gratuito
-    cupo SMALLINT UNSIGNED NULL,                -- NULL= sin cupo(no hay limite)
-    es_publico TINYINT(1) NOT NULL DEFAULT 1,   -- 1 = publico   0 = privado
-    fecha_inicio DATE NOT NULL,
-    fecha_fin DATE NOT NULL,
-    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_cursos_creador (creador_id),
-    KEY idx_cursos_titulo (titulo),
-    KEY idx_cursos_fechas (fecha_inicio, fecha_fin),
-    -- FK a usuarios
-    CONSTRAINT fk_cursos_creador FOREIGN KEY (creador_id) REFERENCES usuarios(id),
-    CONSTRAINT ck_cursos_costo CHECK (costo >= 0),
-    CONSTRAINT ck_cursos_cupo CHECK (cupo IS NULL or cupo > 0),
-    CONSTRAINT ck_cursos_publico CHECK (es_publico IN (0, 1)),
-    CONSTRAINT ck_cursos_fechas CHECK (fecha_fin >= fecha_inicio)
+--
+-- Estructura de tabla para la tabla `solicitudes_pro`
+--
 
+CREATE TABLE `solicitudes_pro` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `usuario_id` int(10) UNSIGNED NOT NULL,
+  `mensaje` text NOT NULL,
+  `adjunto_ruta` varchar(255) DEFAULT NULL,
+  `estado` enum('pendiente','aprobado','rechazado') NOT NULL DEFAULT 'pendiente',
+  `admin_id` int(10) UNSIGNED DEFAULT NULL,
+  `fecha_vencimiento` date DEFAULT NULL,
+  `fecha_solicitud` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- INSERT de cursos
+--
+-- Volcado de datos para la tabla `solicitudes_pro`
+--
 
+INSERT INTO `solicitudes_pro` (`id`, `usuario_id`, `mensaje`, `adjunto_ruta`, `estado`, `admin_id`, `fecha_vencimiento`, `fecha_solicitud`) VALUES
+(4, 2, 'Adjunto el comprobante de pago del plan pro.', 'pagos/comprobantes/comprobante_abril.pdf', 'aprobado', 2, '2027-12-31', '2026-11-11 16:11:08'),
+(5, 4, 'Les envío el comprobante de la transferencia.', 'pagos/comprobantes/comprobante_martin.jpg', 'pendiente', NULL, NULL, '2026-11-11 16:11:08'),
+(6, 5, 'Realicé el pago, adjunto la captura.', 'pagos/comprobantes/comprobante_sofia.png', 'rechazado', 2, NULL, '2026-11-11 16:11:08');
 
--- * * * CURSO_ETIQUTAS * * * (cursos N:M etiquetas)
+-- --------------------------------------------------------
 
--- Tabal de curso_etiquetas
-CREATE TABLE curso_etiquetas (
-    curso_id INT UNSIGNED NOT NULL,
-    etiqueta_id INT UNSIGNED NOT NULL,
-    PRIMARY KEY (curso_id, etiqueta_id),
-    KEY idx_ce_etiqueta (etiqueta_id),
-    -- FK a cursos y etiquetas
-    CONSTRAINT fk_ce_curso FOREIGN KEY (curso_id) REFERENCES cursos(id) ON DELETE CASCADE,
-    CONSTRAINT fk_ce_etiqueta FOREIGN KEY (etiqueta_id) REFERENCES etiquetas(id) ON DELETE CASCADE
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `rol_id` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
+  `plan_id` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
+  `nombre` varchar(100) NOT NULL,
+  `apellido` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `antecedentes` text DEFAULT NULL,
+  `imagen_perfil` varchar(255) DEFAULT NULL,
+  `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
+  `plan_vence_en` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- INSERT de curso_etiqueta
+--
+-- Volcado de datos para la tabla `usuarios`
+--
 
+INSERT INTO `usuarios` (`id`, `rol_id`, `plan_id`, `nombre`, `apellido`, `email`, `password_hash`, `antecedentes`, `imagen_perfil`, `fecha_registro`, `plan_vence_en`) VALUES
+(1, 2, 1, 'ADMIN', 'SYSTEM', 'admin1@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2026-11-11 14:55:21', NULL),
+(2, 1, 1, 'ABRIL', 'PAEZ CUELLO', 'abril@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2026-11-11 14:55:21', NULL),
+(3, 1, 2, 'Laura', 'Gómez', 'laurapro@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 16:05:25', '2027-12-31'),
+(4, 1, 1, 'Martín', 'Rojas', 'martin@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 16:05:25', NULL),
+(5, 1, 1, 'Sofía', 'Díaz', 'sofia@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 16:05:25', NULL);
 
--- * * * CURSO_ARCHIVOS * * *
+-- --------------------------------------------------------
 
--- Tabla de curso_archivos
-CREATE TABLE curso_archivos (
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    curso_id INT UNSIGNED NOT NULL,
-    nombre_archivo VARCHAR(255) NOT NULL,
-    ruta_archivo VARCHAR(255) NOT NULL,
-    peso_bytes INT UNSIGNED NOT NULL,
-    fecha_subida DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_ca_curso (curso_id),
-    -- FK a cursos
-    CONSTRAINT fk_ca_curso FOREIGN KEY (curso_id) REFERENCES cursos (id) ON DELETE CASCADE,
-    CONSTRAINT ck_ca_peso CHECK (peso_bytes > 0)
+--
+-- Estructura de tabla para la tabla `usuarios_intereses`
+--
+
+CREATE TABLE `usuarios_intereses` (
+  `usuario_id` int(10) UNSIGNED NOT NULL,
+  `etiqueta_id` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- INSERT de curso_archivos
+--
+-- Volcado de datos para la tabla `usuarios_intereses`
+--
 
+INSERT INTO `usuarios_intereses` (`usuario_id`, `etiqueta_id`) VALUES
+(2, 1),
+(2, 2),
+(3, 1),
+(3, 3),
+(4, 4),
+(5, 2),
+(5, 5);
 
--- * * * INSCRIPCIONES * * *
+--
+-- Índices para tablas volcadas
+--
 
--- Tabla de inscripciones
-CREATE TABLE inscripciones (
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    curso_id INT UNSIGNED NOT NULL,
-    usuario_id INT UNSIGNED NOT NULL,
-    estado ENUM('pendiente', 'confirmada', 'cancelada') NOT NULL DEFAULT 'confirmada', -- cuando sea pago PHP la crea con 'pendiente'
-    fecha_inscripcion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_inscripciones_curso_usuario (curso_id, usuario_id),  -- no se anota 2 veces
-    KEY idx_inscripcion_usuario (usuario_id),
-    -- FK a cursos y usuarios
-    CONSTRAINT fk_inscripciones_curso FOREIGN KEY (curso_id) REFERENCES cursos(id) ON DELETE CASCADE,
-    CONSTRAINT fk_inscripciones_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Indices de la tabla `cursos`
+--
+ALTER TABLE `cursos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_cursos_creador` (`creador_id`),
+  ADD KEY `idx_cursos_titulo` (`titulo`),
+  ADD KEY `idx_cursos_fechas` (`fecha_inicio`,`fecha_fin`);
 
--- INSERT de inscripciones
+--
+-- Indices de la tabla `curso_archivos`
+--
+ALTER TABLE `curso_archivos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_ca_curso` (`curso_id`);
 
+--
+-- Indices de la tabla `curso_etiquetas`
+--
+ALTER TABLE `curso_etiquetas`
+  ADD PRIMARY KEY (`curso_id`,`etiqueta_id`),
+  ADD KEY `idx_ce_etiqueta` (`etiqueta_id`);
 
--- * * * PREGUNTAS * * *
+--
+-- Indices de la tabla `etiquetas`
+--
+ALTER TABLE `etiquetas`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_etiquetas_nombre` (`nombre`);
 
--- Tabla de preguntas
-CREATE TABLE preguntas ( 
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    curso_id INT UNSIGNED NOT NULL,
-    autor_id INT UNSIGNED NOT NULL,
-    titulo VARCHAR(200) NOT NULL,
-    contenido TEXT NOT NULL,
-    destacada TINYINT(1) NOT NULL DEFAULT 0,  -- 0 = no destacada  1 = destacada
-    respuesta_aceptada_id INT UNSIGNED NULL,  -- si no es NULL, la pregunta está cerrada
-    fecha_creada DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_preg_curso (curso_id),
-    KEY idx_preg_autor (autor_id),
-    -- FK a cursos y usuarios
-    CONSTRAINT fk_preg_curso FOREIGN KEY (curso_id) REFERENCES cursos(id) ON DELETE CASCADE,
-    CONSTRAINT fk_preg_autor FOREIGN KEY (autor_id) REFERENCES usuarios(id),
-    CONSTRAINT ck_preg_destacada CHECK (destacada IN (0, 1))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Indices de la tabla `inscripciones`
+--
+ALTER TABLE `inscripciones`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_inscripciones_curso_usuario` (`curso_id`,`usuario_id`),
+  ADD KEY `idx_inscripcion_usuario` (`usuario_id`);
 
--- INSERT de preguntas
+--
+-- Indices de la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_notif_usuario` (`usuario_id`,`leida`,`fecha`),
+  ADD KEY `idx_notif_actor` (`actor_id`),
+  ADD KEY `idx_notif_curso` (`curso_id`),
+  ADD KEY `idx_notif_pregunta` (`pregunta_id`);
 
+--
+-- Indices de la tabla `planes`
+--
+ALTER TABLE `planes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_planes_nombre` (`nombre`);
 
--- * * * RESPUESTAS * * *
+--
+-- Indices de la tabla `preguntas`
+--
+ALTER TABLE `preguntas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_preg_curso` (`curso_id`),
+  ADD KEY `idx_preg_autor` (`autor_id`),
+  ADD KEY `fk_preg_resp_aceptada` (`respuesta_aceptada_id`);
 
--- Tabla de respuestas
-CREATE TABLE respuestas (
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    pregunta_id INT UNSIGNED NOT NULL,
-    autor_id INT UNSIGNED NOT NULL,
-    contenido TEXT NOT NULL,
-    es_aceptada TINYINT(1) NOT NULL DEFAULT 0,  -- 0 = no aceptada  1 = aceptada 
-    fecha_creada DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    fecha_editada DATETIME NULL,
-    PRIMARY KEY (id),
-    KEY idx_resp_pregunta (pregunta_id),
-    KEY idx_resp_autor (autor_id),
-    -- FK a preguntas y usuarios
-    CONSTRAINT fk_resp_pregunta FOREIGN KEY (pregunta_id) REFERENCES preguntas(id) ON DELETE CASCADE,
-    CONSTRAINT fk_resp_autor FOREIGN KEY (autor_id) REFERENCES usuarios(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Indices de la tabla `respuestas`
+--
+ALTER TABLE `respuestas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_resp_pregunta` (`pregunta_id`),
+  ADD KEY `idx_resp_autor` (`autor_id`);
 
--- Se agrega acá(despues de respuestas) porque preguntas y respuestas se referencian entre sí
--- agregamos la fk en preguntas de respuesta_aceptada_id referenciada a respuestas (id)
-ALTER TABLE preguntas ADD CONSTRAINT fk_preg_resp_aceptada FOREIGN KEY (respuesta_aceptada_id) 
-REFERENCES respuestas (id) ON DELETE SET NULL;
+--
+-- Indices de la tabla `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_roles_nombre` (`nombre`);
 
--- INSERT de respuestas
+--
+-- Indices de la tabla `solicitudes_pro`
+--
+ALTER TABLE `solicitudes_pro`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_sp_usuario` (`usuario_id`),
+  ADD KEY `idx_sp_estado` (`estado`),
+  ADD KEY `idx_sp_admin` (`admin_id`);
 
+--
+-- Indices de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_usuarios_email` (`email`),
+  ADD KEY `idx_usuarios_rol` (`rol_id`),
+  ADD KEY `idx_usuarios_plan` (`plan_id`);
 
--- * * * NOTIFICACIONES * * *
+--
+-- Indices de la tabla `usuarios_intereses`
+--
+ALTER TABLE `usuarios_intereses`
+  ADD PRIMARY KEY (`usuario_id`,`etiqueta_id`),
+  ADD KEY `idx_ui_etiqueta` (`etiqueta_id`);
 
--- Tabla de notificaciones
-CREATE TABLE notificaciones ( 
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    usuario_id INT UNSIGNED NOT NULL,  -- quién la recibe
-    actor_id INT UNSIGNED NULL,    -- quién hizo la acción
-    curso_id INT UNSIGNED NOT NULL,
-    pregunta_id INT UNSIGNED NULL,
-    tipo ENUM('pregunta_nueva', 'respuesta_nueva', 'pregunta_cerrada', 'pregunta_eliminada') NOT NULL,
-    mensaje VARCHAR(255) NOT NULL,
-    leida TINYINT(1) NOT NULL DEFAULT 0,  -- 0 = no leida  1 = leida
-    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(id),
-    KEY idx_notif_usuario(usuario_id, leida, fecha),
-    KEY idx_notif_actor(actor_id),
-    KEY idx_notif_curso(curso_id),
-    KEY idx_notif_pregunta(pregunta_id),
-    -- FK a usuarios, cursos y preguntas
-    CONSTRAINT fk_notif_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-    CONSTRAINT fk_notif_actor FOREIGN KEY (actor_id) REFERENCES usuarios(id) ON DELETE SET NULL,
-    CONSTRAINT fk_notif_curso FOREIGN KEY (curso_id) REFERENCES cursos(id) ON DELETE CASCADE,
-    CONSTRAINT fk_notif_pregunta FOREIGN KEY (pregunta_id) REFERENCES preguntas(id) ON DELETE SET NULL,
-    CONSTRAINT ck_notif_leida CHECK (leida IN (0, 1))
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- AUTO_INCREMENT de la tabla `cursos`
+--
+ALTER TABLE `cursos`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
--- INSERT de notificaciones
+--
+-- AUTO_INCREMENT de la tabla `curso_archivos`
+--
+ALTER TABLE `curso_archivos`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT de la tabla `etiquetas`
+--
+ALTER TABLE `etiquetas`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
+--
+-- AUTO_INCREMENT de la tabla `inscripciones`
+--
+ALTER TABLE `inscripciones`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
+--
+-- AUTO_INCREMENT de la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `planes`
+--
+ALTER TABLE `planes`
+  MODIFY `id` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `preguntas`
+--
+ALTER TABLE `preguntas`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `respuestas`
+--
+ALTER TABLE `respuestas`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT de la tabla `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `solicitudes_pro`
+--
+ALTER TABLE `solicitudes_pro`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `cursos`
+--
+ALTER TABLE `cursos`
+  ADD CONSTRAINT `fk_cursos_creador` FOREIGN KEY (`creador_id`) REFERENCES `usuarios` (`id`);
+
+--
+-- Filtros para la tabla `curso_archivos`
+--
+ALTER TABLE `curso_archivos`
+  ADD CONSTRAINT `fk_ca_curso` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `curso_etiquetas`
+--
+ALTER TABLE `curso_etiquetas`
+  ADD CONSTRAINT `fk_ce_curso` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_ce_etiqueta` FOREIGN KEY (`etiqueta_id`) REFERENCES `etiquetas` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `inscripciones`
+--
+ALTER TABLE `inscripciones`
+  ADD CONSTRAINT `fk_inscripciones_curso` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_inscripciones_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  ADD CONSTRAINT `fk_notif_actor` FOREIGN KEY (`actor_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_notif_curso` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_notif_pregunta` FOREIGN KEY (`pregunta_id`) REFERENCES `preguntas` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_notif_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `preguntas`
+--
+ALTER TABLE `preguntas`
+  ADD CONSTRAINT `fk_preg_autor` FOREIGN KEY (`autor_id`) REFERENCES `usuarios` (`id`),
+  ADD CONSTRAINT `fk_preg_curso` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_preg_resp_aceptada` FOREIGN KEY (`respuesta_aceptada_id`) REFERENCES `respuestas` (`id`) ON DELETE SET NULL;
+
+--
+-- Filtros para la tabla `respuestas`
+--
+ALTER TABLE `respuestas`
+  ADD CONSTRAINT `fk_resp_autor` FOREIGN KEY (`autor_id`) REFERENCES `usuarios` (`id`),
+  ADD CONSTRAINT `fk_resp_pregunta` FOREIGN KEY (`pregunta_id`) REFERENCES `preguntas` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `solicitudes_pro`
+--
+ALTER TABLE `solicitudes_pro`
+  ADD CONSTRAINT `fk_sp_admin` FOREIGN KEY (`admin_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_sp_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `fk_usuarios_plan` FOREIGN KEY (`plan_id`) REFERENCES `planes` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_usuarios_rol` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `usuarios_intereses`
+--
+ALTER TABLE `usuarios_intereses`
+  ADD CONSTRAINT `fk_ui_etiqueta` FOREIGN KEY (`etiqueta_id`) REFERENCES `etiquetas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_ui_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

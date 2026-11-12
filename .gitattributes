@@ -1,0 +1,5 @@
+#detecta el texto automáticamente y mantiene los .sql y scripts en LF
+
+* text=auto
+*.sql text eol=lf
+*.php text eol=lf
