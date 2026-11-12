@@ -1,6 +1,179 @@
 <?php 
+require_once __DIR__ . '/../../config/conexion.php';
 
 class Curso {
+    //obtener limites de plan (y verificar fecha de vencimiento)
+    public static function obtenerPlanUsuario($usuarioId) {
+        $db = conectar();
+        $sql = "SELECT u.plan_id, u.plan_vence_en, p.* 
+                FROM usuarios u JOIN planes p ON u.pla_id = p.id
+                WHERE u.id = ?";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $usuarioId);
+        mysqli_stmt_execute($stmt);
+
+        $plan = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+
+        //si es pro(plan_id=2) y ya venció aplican las reglas de plan gratuito
+        if($plan && $plan['plan_id'] == 2 && !empty($plan['plan_vence_en']) && $plan['plan_vence_en'] < date('Y-m-d')) {
+            $sqlGratuito = "SELECT * FROM planes WHERE id = 1";
+            $result = mysqli_query($db, $sqlGratuito);
+            $planGratuito = mysqli_fetch_assoc($result);
+            $planGratuito['plan_id'] = 1;
+            return $planGratuito;
+        }
+
+        return $plan;
+    }
+
+    //cuenta cursos activos creados por el usuario (fecha_fin >= hoy)
+    public static function contarCursosActivos($usuarioId) {
+        $db = conectar();
+        $sql = "SELECT COUNT(*) AS total FROM cursos WHERE creador_id = ? AND fecha_fin >= CURDATE()";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $usuarioId);
+        mysqli_stmt_execute($stmt);
+
+        $fila = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+
+        return (int)$fila['total'];
+    }
+
+    //suma peso total(bytes) de los archivos subidos por el creador
+    public static function obtenerBytesTotalesUsuario($usuarioId) {
+        $db = conectar();
+        $sql = "SELECT COALLESCE(SUM(ca.peso_bytes), 0) AS total_bytes
+                FROM curso_archivos ca JOIN cursos c ON ca.curso_id = c.id
+                WHERE c.creador_id = ?";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $usuarioId);
+        mysqli_stmt_execute($stmt);
+
+        $fila = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+
+        return (int)$fila['total_bytes'];
+    }
+
+    //cunta cuantos archivos tiene UN curso
+    public static function contarArchivosCurso($cursoId) {
+        $db = conectar();
+        $sql = "SELECT COUNT(*) AS total FROM curso_archivos WHERE curso_id = ?";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $cursoId);
+        mysqli_stmt_execute($stmt);
+
+        $fila = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+
+        return (int)$fila['total'];
+    }
+
+    //crea un nuevo curso y devuelve su id
+    public static function crear($creador_id, $titulo, $descripcion, $costo, $cupo, $esPublico, $fechaInicio, $fechaFin) {
+        $db = conectar();
+        $sql = "INSERT INTO cursos (creador_id, titulo, descripcion, costo, cupo, es_publico, fecha_inicio, fecha_fin)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "issiiss", $creador_id, $titulo, $descripcion, $costo, $cupo, $esPublico, $fechaInicio, $fechaFin);
+        mysqli_stmt_execute($stmt);
+
+        if( mysqli_stmt_execute($stmt)) {
+            $nuevoId = mysqli_insert_id($db); //devuelve el último id que se generó en la bdd(id del nuevo curso)
+            mysqli_stmt_close($stmt);
+            return $nuevoId;
+        }
+        mysqli_stmt_close($stmt);
+        return false;
+    }
+
+    //guardar etiquetas y asociarlas al curso
+    public static function asignarEtiquetas($cursoId, $etiquetasTexto) {
+        if(empty(trim($etiquetasTexto))) return; //si el texto de etiqueta esta vacio, sale
+
+        $db = conectar();
+        $lista = array_unique(array_filter(array_map('trim', explode(',',$etiquetasTexto))));
+
+        foreach($lista as $nombreTag) {
+            $nombreTag = mb_substr($nombreTag, 0, 50);  //max 50 caracteres mb=multi-byte(para q no corte mal)
+
+            //inserta si no existe la etiqueta en la tabla etiquetas
+            $sqlInsertTag = "INSERT IGNORE INTO etiquetas (nombre) VALUES (?)"; //ignore: evita falta error si la etiqueta ya existe en la tabla, simplemente no hace el insert(silenciosamente).
+            $stmtTag = mysqli_prepare($db, $sqlInsertTag);
+            mysqli_stmt_bind_param($stmtTag, "s", $nombreTag);
+            mysqli_stmt_execute($stmtTag);
+
+            //obtener id de la etiqueta(existente)
+            $sqlGetTag = "SELECT id FROM etiquetas WHERE nombre = ?"; //no se hace mysqli_insert_id() pq si ya existia y no se insertó entonces no va a devolver el id verdadero, devuelve otro.
+            $stmtGet = mysqli_prepare($db, $sqlGetTag);
+            mysqli_stmt_bind_param($stmtGet, "s", $nombreTag);
+            mysqli_stmt_execute($stmtGet);
+            $tag = mysqli_fetch_assoc(mysqli_stmt_get_result($stmtGet));
+            mysqli_stmt_close($stmtGet);
+
+            if($tag) { //una vez obtenido el id de la etiqueta se inserta relacionandola con el id del curso recibido 
+                $sqlRel = "INSERT IGNORE INTO curso_etiquetas (curso_id, etiqueta_id) VALUES (?, ?)";
+                $stmtRel = mysqli_prepare($db, $sqlRel);
+                mysqli_stmt_bind_param($stmtRel, "ii", $curso_id, $tag['id']);
+                mysqli_stmt_execute($stmtRel);
+                mysqli_stmt_close($stmtRel);
+            }
+        }
+    }
+
+    //registra archivo subido del curso en la bdd
+    public static function gaurdarArchivo($curso_id, $nombreArchivo, $rutaArchivo, $pesoBytes) {
+        $db = conectar();
+        $sql = "INSERT INTO curso_archivos (curso_id, nombre_archivo, ruta_archivo, peso_bytes)
+                VALUES (?, ?, ?, ?)";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "issi", $curso_id, $nombreArchivo, $rutaArchivo, $pesoBytes);
+        $ok = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return $ok;
+    }
+
+    //lsitar cursos publicos activos(primero los pro)
+    public static function obtenerCatalogo($busqueda = '') { //si no se busca nada se asume vacia
+        $db = conectar();
+        $like = '%' . $busqueda . '%'; //sin importar q tenga al inicio ni al final, busca solo $busqueda
+
+        $sql = "SELECT c.id, c.creador_id, c.titulo, c.descripcion, c.costo, c.cupo, c.es_publico, c.fecha_inicio,
+                c.fecha_fin, c.fecha_creacion, u.nombre AS creador_nombre, u.apellido AS creador_apellido, 
+                u.plan_id AS creador_plan, GROUP_CONCAT(DISTINCT e.nombre SEPARATOR ', ') AS etiquetas
+                FROM cursos c 
+                JOIN usuarios u ON c.creador_id = u.id
+                LEFT JOIN curso_etiquetas ce ON c.id = ce.curso_id
+                LEFT JOIN etiquetas e ON ce.etiqueta_id = e.id
+                WHERE c.es_publico = 1
+                AND c.fecha_fin >= CURDATE()
+                AND (? = '' OR c.titulo LIKE ? OR EXISTS (
+                    SELECT 1 FROM curso_etiquetas ce2
+                    JOIN etiquetas e2 ON ce2.etiqueta_id = e2.id
+                    WHERE ce2.curso_id = c.id 
+                    AND e2.nombre LIKE ?
+                ))
+                GROUP BY c.id, c.creador_id, c.titulo, c.descripcion, c.costo, c.cupo, c.es_publico, c.fecha_inicio,
+                        c.fecha_fin, c.fecha_creacion, u.nombre, u.apellido, u.plan_id
+                ORDER BY u.plan_id DESC, c.fecha_creacion DESC";  
+        
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "sss", $busqueda, $like, $like);
+        mysqli_stmt_execute($stmt);
+        $cursos = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
+
+        return $cursos;
+                 
+        //left join: "mostrar el curso igual aunque no tenga etiquetas"
+    }
 
 }
 
