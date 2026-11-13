@@ -1,11 +1,20 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 require_once __DIR__ . '/../app/controllers/AuthController.php';
+require_once __DIR__ . '/../app/controllers/CursoController.php';
 
-$action = $_GET['action'] ?? 'login';
+$action = $_GET['action'] ?? 'home';
 
-switch ($action){
+switch ($action) {
+    // --- INICIO ---
+    case 'home':
+        CursoController::home();
+        break;
+
+    // --- AUTENTICACIÓN ---
     case 'login':
         require_once __DIR__ . '/../app/views/auth/login.php';
         break;
@@ -21,22 +30,50 @@ switch ($action){
     case 'procesar_registro':
         AuthController::registro();
         break;
-        
+
     case 'logout':
         AuthController::logout();
         break;
 
+    // --- CURSOS ---
     case 'catalogo':
-        // Vista temporal después del login exitoso
-        echo "<h2>¡Bienvenido " . htmlspecialchars($_SESSION['usuario_nom']) . "!</h2>";
-        echo "<p>Rol: " . htmlspecialchars($_SESSION['rol_nombre']) . "</p>";
-        echo "<a href='index.php?action=logout'>Cerrar Sesión</a>";
+        CursoController::catalogo();
+        break;
+
+    case 'crear_curso':
+        CursoController::mostrarCrearCurso();
+        break;
+
+    case 'guardar_curso':
+        CursoController::guardar();
+        break;
+
+    case 'detalle_curso':
+        CursoController::detalle();
+        break;
+
+    case 'editar_curso':
+        CursoController::mostrarEditarCurso();
+        break;
+
+    case 'actualizar_curso':
+        CursoController::editarCurso();
+        break;
+
+    case 'eliminar_curso':
+        CursoController::eliminar();
+        break;
+
+    case 'subir_material':
+        CursoController::subirMaterial();
+        break;
+
+    case 'descargar_material':
+        CursoController::descargarMaterial();
         break;
 
     default:
-        require_once __DIR__ . '/../app/views/auth/login.php';
-        break;    
+        CursoController::home();
+        break;
 }
-
-
 ?>
