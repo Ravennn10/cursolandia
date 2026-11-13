@@ -28,7 +28,7 @@
     </div>
 </section>
 
-<!-- Sección de Cursos Destacados -->
+<!-- Cursos Destacados -->
 <section class="mb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -53,7 +53,7 @@
     </div>
 </section>
 
-<!-- Texto orientativo: ¿Cómo funciona? -->
+<!-- Texto guia -->
 <section class="mb-4">
     <div class="card card-cursolandia rounded-4 shadow-sm p-4 p-md-5">
         <div class="text-center mb-4">
