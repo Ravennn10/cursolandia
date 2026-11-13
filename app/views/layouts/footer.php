@@ -2,7 +2,7 @@
 
 <footer class="footer-cursolandia text-center py-3 mt-5">
     <div class="container">
-        <small class="fw-semibold">Cursolandia.com &copy; 2026 - Tecnicatura Universitaria en Web</small>
+        <small class="fw-semibold">Cursolandia &copy; 2026 - TUW UNSL</small>
     </div>
 </footer>
 
