@@ -141,13 +141,13 @@ class Curso {
     }
 
     //lsitar cursos publicos activos(primero los pro)
-    public static function obtenerCatalogo($busqueda = '') { //si no se busca nada se asume vacia
+    public static function obtenerCatalogo($busqueda = '') { //valor default si no se pasa nada (vacio)
         $db = conectar();
-        $like = '%' . $busqueda . '%'; //sin importar q tenga al inicio ni al final, busca solo $busqueda
+        $like = '%' . $busqueda . '%'; //%: comodines (necesarios para busquedas parciales (LIKE))
 
         $sql = "SELECT c.id, c.creador_id, c.titulo, c.descripcion, c.costo, c.cupo, c.es_publico, c.fecha_inicio,
-                c.fecha_fin, c.fecha_creacion, u.nombre AS creador_nombre, u.apellido AS creador_apellido, 
-                u.plan_id AS creador_plan, GROUP_CONCAT(DISTINCT e.nombre SEPARATOR ', ') AS etiquetas
+                    c.fecha_fin, c.fecha_creacion, u.nombre AS creador_nombre, u.apellido AS creador_apellido, 
+                    u.plan_id AS creador_plan, GROUP_CONCAT(DISTINCT e.nombre SEPARATOR ', ') AS etiquetas
                 FROM cursos c 
                 JOIN usuarios u ON c.creador_id = u.id
                 LEFT JOIN curso_etiquetas ce ON c.id = ce.curso_id
@@ -172,10 +172,85 @@ class Curso {
 
         return $cursos;
                  
-        //left join: "mostrar el curso igual aunque no tenga etiquetas"
+        //group concat: vuelve a unir las etiquetas en una cadena separadas por coma
+        //left join: "mostrar el curso igual, aunque no tenga etiquetas"
+        //exists: consulta interna (si no aparece por titulo busca por etiquetas)
+        //
+    }
+
+    //obtiene cursos recomendados entre intereses del usuario y etiquetas de curso
+    public static function obtenerRecomendados($usuarioId) {
+        $db = conectar();
+        $sql = "SELECT c.id, c.creador_id, c.titulo, c.descripcion, c.costo, c.cupo, c.es_publico, c.fecha_inicio,
+                    c.fecha_fin, c.fecha_creacion, u.nombre AS creador_nombre, u.apellido AS creador_apellido, 
+                    u.plan_id AS creador_plan, GROUP_CONCAT(DISTINCT e.nombre SEPARATOR ', ') AS etiquetas,
+                    COUNT(DISTINCT iu.etiqueta_id) AS coincidencias
+                FROM cursos c
+                JOIN usuarios u ON c.creador_id = u.id
+                JOIN curso_etiquetas ce_coincidencia ON c.id = ce_coincidencia.curso_id
+                JOIN usuarios_intereses ui ON ce_coincidencia.etiqueta_id = ui.etiqueta_id
+                LEFT JOIN curso_etiquetas ce ON c.id = ce.curso_id
+                LEFT JOIN etiquetas e ON ce.etiquetas_id = e.id
+                WHERE ui.usuario_id = ?
+                AND c.creador_id != ?
+                AND c.es_publico = 1
+                AND c.fehca_fin >= CURDATE()
+                GROUP BY c.id, c.creador_id, c.titulo, c.descripcion, c.costo, c.cupo, c.es_publico, c.fecha_inicio,
+                        c.fecha_fin, c.fecha_creacion, u.nombre, u.apellido, u.plan_id
+                ORDER BY u.plan_id DESC, coincidencias DESC, c.fecha_creacion DESC
+                LIMIT 6";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt,"ii", $usuarioId, $usuarioId);
+        mysqli_stmt_execute($stmt);
+        $recomendados = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
+
+        return $recomendados;
+
+        //count: cuenta cuantas etiquetas tienen en comun el usuario y el curso
+        //join curso_etiquetas x2: join para verificar q al menos comparten 1 etiqueta - left join para mostrar todas las etiquetas q tiene 1 curso(incluso las q no coinciden con el usuario)
+        //where: evita q muestre los cursos cerados por uno mismo - q muestre los publicos y activos
+        //order by: prioridad PRO - los que tengas mas coincidencias de etiquetas - creado mas reciente
+    }
+
+
+    //obtiene un curso por id con datos de creador y etiquetas
+    public static function obtenerPorId($cursoId) {
+        $db = conectar();
+        $sql = "SELECT c.*, u.nombre AS creador_nombre, u.apellido AS creador_apellido, u.plan_id AS creador_plan,
+                u.imagen_perfil AS creador_imagen,
+                GROUP_CONCAT(DISTINCT e.nombre SEPARATOR ', ') AS etiquetas
+                FROM cursos c
+                JOIN usuarios u ON c.creador_id = u.id
+                LEFT JOIN curso_etiquetas ce ON c.id = ce.curso_id
+                LEFT JOIN etiquetas e ON ce.etiquetas_id = e.id
+                WHERE c.id = ?
+                GROUP BY c.id, u.nombre, u.apellido, u.plan_id, u.imagen_perfil";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $cursoId);
+        mysqli_stmt_execute($stmt);
+        $curso = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+        
+        return $curso;
+    }
+
+    //obtiene los materiales descargables de un curso
+    public static function obtenerArchivos($cursoId) {
+        $db = conectar();
+        $sql = "SELECT * FROM curso_archivos WHERE curso_id = ? ORDER BY fecha_subida DESC";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $cursoId);
+        mysqli_stmt_execute($stmt);
+        $archivos = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
+
+        return $archivos;
     }
 
 }
-
 
 ?>
