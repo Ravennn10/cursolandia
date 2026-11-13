@@ -213,6 +213,32 @@ class Curso {
         //order by: prioridad PRO - los que tengas mas coincidencias de etiquetas - creado mas reciente
     }
 
+    //obtener cursos destacados(para pagina principal)(prioridad creadores PRO)
+    public static function obtenerDestacados($limite = 3) {
+        $db = conectar();
+        $sql = "SELECT c.id, c.creador_id, c.titulo, c.descripcion, c.costo, c.cupo, 
+                       c.es_publico, c.fecha_inicio, c.fecha_fin, c.fecha_creacion,
+                       u.nombre AS creador_nombre, u.apellido AS creador_apellido, u.plan_id AS creador_plan,
+                       GROUP_CONCAT(DISTINCT e.nombre SEPARATOR ', ') AS etiquetas
+                FROM cursos c
+                JOIN usuarios u ON c.creador_id = u.id
+                LEFT JOIN curso_etiquetas ce ON c.id = ce.curso_id
+                LEFT JOIN etiquetas e ON ce.etiqueta_id = e.id
+                WHERE c.es_publico = 1 AND c.fecha_fin >= CURDATE()
+                GROUP BY c.id, c.creador_id, c.titulo, c.descripcion, c.costo, c.cupo, 
+                         c.es_publico, c.fecha_inicio, c.fecha_fin, c.fecha_creacion,
+                         u.nombre, u.apellido, u.plan_id
+                ORDER BY u.plan_id DESC, c.fecha_creacion DESC
+                LIMIT ?";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $limite);
+        mysqli_stmt_execute($stmt);
+        $destacados = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
+
+        return $destacados;
+    }
 
     //obtiene un curso por id con datos de creador y etiquetas
     public static function obtenerPorId($cursoId) {
@@ -223,7 +249,7 @@ class Curso {
                 FROM cursos c
                 JOIN usuarios u ON c.creador_id = u.id
                 LEFT JOIN curso_etiquetas ce ON c.id = ce.curso_id
-                LEFT JOIN etiquetas e ON ce.etiquetas_id = e.id
+                LEFT JOIN etiquetas e ON ce.etiqueta_id = e.id
                 WHERE c.id = ?
                 GROUP BY c.id, u.nombre, u.apellido, u.plan_id, u.imagen_perfil";
 
