@@ -265,7 +265,6 @@ class Curso {
             
         }
     
-
     // elimina un curso
     public static function eliminarCurso($cursoId) {
         $db = conectar();
@@ -277,6 +276,23 @@ class Curso {
         mysqli_stmt_close($stmt);
         
         return $eliminado;
+    }
+
+    //obtiene un archivo por su id
+    public static function obtenerArchivoPorId($archivoId) {
+        $db = conectar();
+        $sql = "SELECT * FROM curso_archivos WHERE id = ?";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $archivoId);
+        mysqli_stmt_execute($stmt);
+
+        $archivo = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+
+        mysqli_stmt_close($stmt);
+
+        //devuelve los datos del archivo si existe,  NULL/false si no lo encuentra
+        return $archivo;
     }
 }
 
