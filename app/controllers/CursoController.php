@@ -152,7 +152,7 @@ class CursoController {
         }
     }
 
-    //descarga segura de un archivo(desde storage/material)
+    //descarga segura de un archivo(desde storage/material/)
     public static function descargarMaterial() {
         self::verificarSesion();
 
@@ -193,27 +193,6 @@ class CursoController {
         exit;
 
     }
-
-
-    //ver detalle de curso especifico
-    public static function detalle() {
-        self::verificarSesion();
-        $cursoId = (int)($_GET['id'] ?? 0);
-        $curso = Curso::obtenerPorId($cursoId);
-
-        if(!$curso) {
-            $_SESSION['error'] = "El curso solicitado no existe.";
-            header("Location: index.php?action=catalogo");
-            exit;
-        }
-
-        $archivos = Curso::obtenerArchivos($cursoId);
-        $esCreador = ($curso['creador_id'] == $_SESSION['usuario_id']);
-
-        require_once __DIR__ . '/../views/cursos/detalle.php';
-    }
-
-    //subir material extra a curso ya creado(solo creador)
 
 
 

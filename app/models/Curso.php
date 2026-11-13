@@ -263,7 +263,7 @@ class Curso {
 
         return $actualizado;
             
-        }
+    }
     
     // elimina un curso
     public static function eliminarCurso($cursoId) {
