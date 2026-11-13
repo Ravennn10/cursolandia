@@ -3,13 +3,13 @@
 $esPro = ($curso['creador_plan'] == 2);
 $bgBanner = $esPro ? '#052B2A' : '#6B8F71';
 $colorIcono = $esPro ? '#B9F5D8' : '#FFFFFF';
-$esBaseDatos = stripos($curso['etiquetas'] ?? '', 'mysql') !== false || stripos($curso['etiquetas'] ?? '', 'base') !== false;
+$icono = 'fa-solid fa-graduation-cap';
 ?>
 
 <div class="col-md-4 mb-4">
     <div class="card h-100 rounded-4 shadow-sm overflow-hidden <?= $esPro ? 'card-cursolandia-pro' : 'card-cursolandia' ?>">
         
-        <!-- Cabecera de color con ícono centrado -->
+        <!-- Cabecera de color con ícono -->
         <div class="d-flex align-items-center justify-content-center position-relative" 
              style="height: 135px; background-color: <?= $bgBanner ?>; color: <?= $colorIcono ?>;">
             
@@ -19,18 +19,8 @@ $esBaseDatos = stripos($curso['etiquetas'] ?? '', 'mysql') !== false || stripos(
                 </span>
             <?php endif; ?>
 
-            <?php if ($esBaseDatos): ?>
-                <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-                </svg>
-            <?php else: ?>
-                <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <polyline points="16 18 22 12 16 6"></polyline>
-                    <polyline points="8 6 2 12 8 18"></polyline>
-                </svg>
-            <?php endif; ?>
+            <i class="<?= $icono ?> fa-3x"></i>
+            
         </div>
 
         <!-- Cuerpo de la tarjeta -->
