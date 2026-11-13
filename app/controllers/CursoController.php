@@ -16,7 +16,7 @@ class CursoController {
 
     //cargar home
     public static function home() {
-        $cursosDes = Curso::obtenerDestacados(3);
+        $cursosDestacados = Curso::obtenerDestacados(3);
         require_once __DIR__ . '/../views/home.php';
     }
 
@@ -213,7 +213,13 @@ class CursoController {
         }
 
         //si llega acá, algo fallo, vuelve al catalogo
-        header("Location: index.php?action=catalogo");
+       if (!empty($archivo['curso_id'])) {
+            //esta en la bdd pero no en la carpeta fisica(storage/material)
+            header("Location: index.php?action=detalle_curso&id=" . $archivo['curso_id']);
+        } else {
+            //no esta en la bdd
+            header("Location: index.php?action=catalogo");
+        }
         exit;
 
     }
