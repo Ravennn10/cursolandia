@@ -14,14 +14,20 @@ class CursoController {
         }
     }
 
+    //cargar home
+    public static function home() {
+        $cursosDes = Curso::obtenerDestacados(3);
+        require_once __DIR__ . '/../views/home.php';
+    }
+
     //muestra catalogo y cursos recomendados
     public static function catalogo() {
-        self::verificarSesion();
+        
         $busqueda = trim($_GET['q'] ?? ''); //q = abreviacion de query (enlace limpio)
 
         $cursos = Curso::obtenerCatalogo($busqueda);
         //si no busca nada, le recomienda - si busca algo, no le recomienda
-        $recomendados = ($busqueda === '') ? Curso::obtenerRecomendados($_SESSION['usuario_id']) : [];
+        $recomendados = ($busqueda === '' && isset($_SESSION['usuario_id'])) ? Curso::obtenerRecomendados($_SESSION['usuario_id']) : [];
 
         require_once __DIR__ . '/../views/cursos/catalogo.php';
     }
@@ -45,7 +51,7 @@ class CursoController {
 
         $usuarioId = $_SESSION['usuario_id'];
         $plan = Curso::obtenerPlanUsuario($usuarioId);
-        $cursosActivos = Curso::contarArchivosCurso($usuarioId);
+        $cursosActivos = Curso::contarCursosActivos($usuarioId);
 
         //valida el limite de cursos segun el plan(3 = gratuito - NULL = pro)
         if($plan['max_cursos_activos'] !== NULL && $cursosActivos >= $plan['max_cursos_activos']) {
@@ -212,10 +218,26 @@ class CursoController {
 
     }
 
+    //muestra form editar curso
+    public static function mostrarEditarCurso() {
+        self::verificarSesion();
+        $cursoId = (int)($_GET['id'] ?? 0);
+        $curso = Curso::obtenerPorId($cursoId);
+
+        if(!$curso || $curso['creador_id'] != $_SESSION['usuario_id']){
+            $_SESSION['error'] = "No tienes permiso para editar este curso.";
+            header("Location: index.php?action=catalogo");
+            exit;
+        }
+        require_once __DIR__ . '/../views/cursos/editar.php';
+        
+    }
+
     //procesa form de edicion de curso(solo texto)
     public static function editarCurso() {
         self::verificarSesion();
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        //si no se mandó nada, lo devuelve al catalogo
+        if($_SERVER['REQUEST_METHOD'] !== 'POST'){
             header("Location: index.php?action=catalogo");
             exit;
         }
@@ -314,7 +336,7 @@ class CursoController {
         }
 
         //define directorio destino, si no existe lo crea
-        $directorioDestino = __DIR__ . 'storage/material/';
+        $directorioDestino = __DIR__ . '/../../storage/material/';
         if (!is_dir($directorioDestino)) {
             mkdir($directorioDestino, 0777, true);
         }
@@ -336,7 +358,23 @@ class CursoController {
     }
 
 
+    //procesa eliminar curso
+    public static function eliminar() {
+        self::verificarSesion();
+        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $cursoId = (int)($_POST['curso_id'] ?? 0);
+            $curso = Curso::obtenerPorId($cursoId);
 
+            if($curso && $curso['craedor_id'] == $_SESSION['usuario_id']){
+                Curso::eliminarCurso($cursoId);
+                $_SESSION['exito'] = "Curso eliminado!";
+            } else {
+                $_SESSION['error'] = "No tiene permisos para eliminar este curso.";
+            }
+        }
+        header("Location: index.php?action=catalogo");
+        exit;
+    }
 
 }
 
