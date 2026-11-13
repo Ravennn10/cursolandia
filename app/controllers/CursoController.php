@@ -194,7 +194,50 @@ class CursoController {
 
     }
 
+    //procesa form de edicion de curso(solo texto)
+    public static function editarCurso() {
+        self::verificarSesion();
+        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+            header("Location: index.php?action=catalogo");
+            exit;
+        }
 
+        $usuarioId = $_SESSION['usuario_id'];
+        $cursoId = (int)($_POST['curso_id'] ?? 0);
+
+        //limpia los dtos
+        $titulo = trim($_POST['titulo'] ?? '');
+        $descripcion = trim($_POST['descripcion'] ?? '');
+        $costo = ($_POST['costo'] !== '' && (float)$_POST['costo'] > 0) ? (float)$_POST['costo'] : 0.00;
+
+        //verifica que un usuario no edite el curso de otro
+        $cursoOriginal = Curso::obtenerPorId($cursoId);
+        if(!$cursoOriginal || $cursoOriginal['creador_id'] != $usuarioId){
+            $_SESSION['error'] = "No tienes permiso para editar este curso.";
+            header("Location: index.php?action=catalogo");
+            exit;
+        }
+
+        //verifica campos
+        if (empty($titulo) || empty($descripcion)) {
+            $_SESSION['error'] = "El título y la descripción son obligatorios.";
+            header("Location: index.php?action=editar_curso&id=" . $cursoId);
+            exit;
+        }
+
+        //actualiza los datos en la bdd
+        $exito = Curso::actualizarCurso($cursoId, $titulo, $descripcion, $costo);
+
+        //dependiendo el resultado lo manda al curso actualizado o lo lleva de nuevo al form de editar el curso
+        if ($exito) {
+            $_SESSION['exito'] = "Información general del curso actualizada.";
+            header("Location: index.php?action=detalle_curso&id=" . $cursoId);
+        } else {
+            $_SESSION['error'] = "Hubo un error al actualizar los datos en la base de datos.";
+            header("Location: index.php?action=editar_curso&id=" . $cursoId);
+        }
+        exit;
+    }
 
 }
 
