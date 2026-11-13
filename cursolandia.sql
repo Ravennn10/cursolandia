@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-11-2026 a las 16:35:23
+-- Tiempo de generación: 13-11-2026 a las 18:10:25
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -16,6 +16,10 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
+
+-- Crear la base de datos si no existe y seleccionarla
+CREATE DATABASE IF NOT EXISTS cursolandia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE cursolandia;
 
 --
 -- Base de datos: `cursolandia`
@@ -45,8 +49,8 @@ CREATE TABLE `cursos` (
 --
 
 INSERT INTO `cursos` (`id`, `creador_id`, `titulo`, `descripcion`, `costo`, `cupo`, `es_publico`, `fecha_inicio`, `fecha_fin`, `fecha_creacion`) VALUES
-(1, 2, 'Introducción a PHP y MySQL', 'Aprendé a crear aplicaciones web dinámicas con PHP, MySQL y Bootstrap desde cero.', 0.00, 30, 1, '2026-10-01', '2027-03-31', '2026-11-11 16:14:46'),
-(2, 2, 'Diseño de interfaces con Bootstrap', 'Curso práctico para maquetar sitios responsivos usando Bootstrap 5.', 15000.00, 20, 1, '2026-11-01', '2027-02-28', '2026-11-11 16:14:46'),
+(1, 11, 'Introducción a PHP y MySQL', 'Aprendé a crear aplicaciones web dinámicas con PHP, MySQL y Bootstrap desde cero.', 0.00, 30, 1, '2026-10-01', '2027-03-31', '2026-11-11 16:14:46'),
+(2, 11, 'Diseño de interfaces con Bootstrap', 'Curso práctico para maquetar sitios responsivos usando Bootstrap 5.', 15000.00, 20, 1, '2026-11-01', '2027-02-28', '2026-11-11 16:14:46'),
 (3, 3, 'Fotografía digital desde cero', 'Conceptos básicos de cámara, composición y edición. Curso privado por invitación.', 0.00, NULL, 0, '2026-11-01', '2027-01-31', '2026-11-11 16:14:46'),
 (4, 3, 'Inglés para programadores', 'Vocabulario técnico y lectura de documentación en inglés.', 0.00, 15, 1, '2026-11-01', '2027-04-30', '2026-11-11 16:14:46'),
 (5, 4, 'Marketing digital para emprendedores', 'Estrategias de redes sociales y publicidad online para pequeños negocios.', 8000.00, 10, 1, '2026-12-01', '2027-03-01', '2026-11-11 16:14:46'),
@@ -145,12 +149,9 @@ INSERT INTO `inscripciones` (`id`, `curso_id`, `usuario_id`, `estado`, `fecha_in
 (1, 1, 3, 'confirmada', '2026-11-11 16:22:34'),
 (2, 1, 4, 'confirmada', '2026-11-11 16:22:34'),
 (3, 1, 5, 'confirmada', '2026-11-11 16:22:34'),
-(4, 2, 2, 'pendiente', '2026-11-11 16:22:34'),
 (5, 2, 5, 'confirmada', '2026-11-11 16:22:34'),
 (6, 3, 3, 'confirmada', '2026-11-11 16:22:34'),
-(7, 4, 2, 'confirmada', '2026-11-11 16:22:34'),
-(8, 4, 4, 'confirmada', '2026-11-11 16:22:34'),
-(9, 5, 2, 'confirmada', '2026-11-11 16:33:05');
+(8, 4, 4, 'confirmada', '2026-11-11 16:22:34');
 
 -- --------------------------------------------------------
 
@@ -246,7 +247,6 @@ CREATE TABLE `respuestas` (
   `pregunta_id` int(10) UNSIGNED NOT NULL,
   `autor_id` int(10) UNSIGNED NOT NULL,
   `contenido` text NOT NULL,
-  `es_aceptada` tinyint(1) NOT NULL DEFAULT 0,
   `fecha_creada` datetime NOT NULL DEFAULT current_timestamp(),
   `fecha_editada` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -255,14 +255,14 @@ CREATE TABLE `respuestas` (
 -- Volcado de datos para la tabla `respuestas`
 --
 
-INSERT INTO `respuestas` (`id`, `pregunta_id`, `autor_id`, `contenido`, `es_aceptada`, `fecha_creada`, `fecha_editada`) VALUES
-(1, 1, 1, 'Ambas sirven. Para esta materia te conviene mysqli procedural.', 0, '2026-11-11 16:25:36', NULL),
-(2, 1, 5, 'Yo también uso mysqli, es lo que vemos en clase.', 0, '2026-11-11 16:25:36', NULL),
-(3, 1, 1, 'Exacto, usá mysqli con consultas preparadas.', 0, '2026-11-11 16:25:36', NULL),
-(4, 2, 1, 'Usá siempre consultas preparadas con mysqli_prepare.', 0, '2026-11-11 16:25:36', NULL),
-(5, 2, 4, 'Y nunca concatenes variables dentro del SQL.', 0, '2026-11-11 16:25:36', NULL),
-(6, 3, 3, 'Usamos Bootstrap 5, la versión actual.', 0, '2026-11-11 16:25:36', NULL),
-(7, 4, 4, 'Sí, las grabaciones se suben al final de cada semana.', 0, '2026-11-11 16:25:36', NULL);
+INSERT INTO `respuestas` (`id`, `pregunta_id`, `autor_id`, `contenido`, `fecha_creada`, `fecha_editada`) VALUES
+(1, 1, 1, 'Ambas sirven. Para esta materia te conviene mysqli procedural.', '2026-11-11 16:25:36', NULL),
+(2, 1, 5, 'Yo también uso mysqli, es lo que vemos en clase.', '2026-11-11 16:25:36', NULL),
+(3, 1, 1, 'Exacto, usá mysqli con consultas preparadas.', '2026-11-11 16:25:36', NULL),
+(4, 2, 1, 'Usá siempre consultas preparadas con mysqli_prepare.', '2026-11-11 16:25:36', NULL),
+(5, 2, 4, 'Y nunca concatenes variables dentro del SQL.', '2026-11-11 16:25:36', NULL),
+(6, 3, 3, 'Usamos Bootstrap 5, la versión actual.', '2026-11-11 16:25:36', NULL),
+(7, 4, 4, 'Sí, las grabaciones se suben al final de cada semana.', '2026-11-11 16:25:36', NULL);
 
 -- --------------------------------------------------------
 
@@ -305,9 +305,8 @@ CREATE TABLE `solicitudes_pro` (
 --
 
 INSERT INTO `solicitudes_pro` (`id`, `usuario_id`, `mensaje`, `adjunto_ruta`, `estado`, `admin_id`, `fecha_vencimiento`, `fecha_solicitud`) VALUES
-(4, 2, 'Adjunto el comprobante de pago del plan pro.', 'pagos/comprobantes/comprobante_abril.pdf', 'aprobado', 2, '2027-12-31', '2026-11-11 16:11:08'),
 (5, 4, 'Les envío el comprobante de la transferencia.', 'pagos/comprobantes/comprobante_martin.jpg', 'pendiente', NULL, NULL, '2026-11-11 16:11:08'),
-(6, 5, 'Realicé el pago, adjunto la captura.', 'pagos/comprobantes/comprobante_sofia.png', 'rechazado', 2, NULL, '2026-11-11 16:11:08');
+(6, 5, 'Realicé el pago, adjunto la captura.', 'pagos/comprobantes/comprobante_sofia.png', 'rechazado', NULL, NULL, '2026-11-11 16:11:08');
 
 -- --------------------------------------------------------
 
@@ -334,11 +333,11 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `rol_id`, `plan_id`, `nombre`, `apellido`, `email`, `password_hash`, `antecedentes`, `imagen_perfil`, `fecha_registro`, `plan_vence_en`) VALUES
-(1, 2, 1, 'ADMIN', 'SYSTEM', 'admin1@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2026-11-11 14:55:21', NULL),
-(2, 1, 1, 'ABRIL', 'PAEZ CUELLO', 'abril@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2026-11-11 14:55:21', NULL),
+(1, 2, 1, 'ADMIN', 'SYSTEM', 'admin1@gmail.com', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 14:55:21', NULL),
 (3, 1, 2, 'Laura', 'Gómez', 'laurapro@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 16:05:25', '2027-12-31'),
 (4, 1, 1, 'Martín', 'Rojas', 'martin@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 16:05:25', NULL),
-(5, 1, 1, 'Sofía', 'Díaz', 'sofia@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 16:05:25', NULL);
+(5, 1, 1, 'Sofía', 'Díaz', 'sofia@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 16:05:25', NULL),
+(11, 1, 1, 'Abril', 'Test', 'abril@gmail.com', '$2y$10$1ETiA5irFZbkfYzIE6LnwOgy1VrlAZTnlxvHx5hf.EAl/OEi8UpXO', NULL, NULL, '2026-11-12 23:11:25', NULL);
 
 -- --------------------------------------------------------
 
@@ -356,8 +355,6 @@ CREATE TABLE `usuarios_intereses` (
 --
 
 INSERT INTO `usuarios_intereses` (`usuario_id`, `etiqueta_id`) VALUES
-(2, 1),
-(2, 2),
 (3, 1),
 (3, 3),
 (4, 4),
@@ -540,7 +537,7 @@ ALTER TABLE `solicitudes_pro`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Restricciones para tablas volcadas
