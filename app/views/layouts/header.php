@@ -63,14 +63,14 @@
 <main class="container flex-grow-1">
     <?php if (isset($_SESSION['error'])): ?>
         <div class="alert alert-danger alert-dismissible fade show">
-            <?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+            <?php htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
 
     <?php if (isset($_SESSION['exito'])): ?>
         <div class="alert alert-cursolandia-info alert-dismissible fade show">
-            <?= htmlspecialchars($_SESSION['exito']); unset($_SESSION['exito']); ?>
+            <?php htmlspecialchars($_SESSION['exito']); unset($_SESSION['exito']); ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
