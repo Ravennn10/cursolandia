@@ -152,6 +152,24 @@ class CursoController {
         }
     }
 
+    //ver detalle de curso especifico
+    public static function detalle() {
+        self::verificarSesion();
+        $cursoId = (int)($_GET['id'] ?? 0);
+        $curso = Curso::obtenerPorId($cursoId);
+
+        if(!$curso) {
+            $_SESSION['error'] = "El curso solicitado no existe.";
+            header("Location: index.php?action=catalogo");
+            exit;
+        }
+
+        $archivos = Curso::obtenerArchivos($cursoId);
+        $esCreador = ($curso['creador_id'] == $_SESSION['usuario_id']);
+
+        require_once __DIR__ . '/../views/cursos/detalle.php';
+    }
+
     //descarga segura de un archivo(desde storage/material/)
     public static function descargarMaterial() {
         self::verificarSesion();
@@ -240,23 +258,84 @@ class CursoController {
     }
 
 
-    //ver detalle de curso especifico
-    public static function detalle() {
+    //subir material extra a curso ya creado(solo creador)
+    public static function subirMaterial() {
         self::verificarSesion();
-        $cursoId = (int)($_GET['id'] ?? 0);
-        $curso = Curso::obtenerPorId($cursoId);
-
-        if(!$curso) {
-            $_SESSION['error'] = "El curso solicitado no existe.";
+        //si no se mando nada, vuelve al catalogo
+        if($_SERVER['REQUEST_METHOD'] !== 'POST'){
             header("Location: index.php?action=catalogo");
             exit;
         }
 
-        $archivos = Curso::obtenerArchivos($cursoId);
-        $esCreador = ($curso['creador_id'] == $_SESSION['usuario_id']);
+        //recupera datos
+        $usuarioId = $_SESSION['usuario_id'];
+        $cursoId = (int)($_POST['curso_id'] ?? 0);
+        $curso = Curso::obtenerPorId($cursoId);
 
-        require_once __DIR__ . '/../views/cursos/detalle.php';
+        //verifica que el curso exista y el usuario que quiere editar sea el creador
+        if (!$curso || $curso['creador_id'] != $usuarioId) {
+            $_SESSION['error'] = "No tienes permisos para subir material a este curso.";
+            header("Location: index.php?action=catalogo");
+            exit;
+        }
+
+        if (!isset($_FILES['material']) || $_FILES['material']['error'] !== UPLOAD_ERR_OK) {
+            $_SESSION['error'] = "Selecciona un archivo válido.";
+            header("Location: index.php?action=detalle_curso&id=" . $cursoId);
+            exit;
+        }
+
+        $plan = Curso::obtenerPlanUsuario($usuarioId);
+        $cantidadActual = Curso::contarArchivosCurso($cursoId);
+        $bytesUsados = Curso::obtenerBytesTotalesUsuario($usuarioId);
+
+        $peso = (int)$_FILES['material']['size'];
+        $nombreOriginal = basename($_FILES['material']['name']);
+
+        //verifica si supera la cantidad maxima(para gratutito)
+        if ($plan['max_archivos_por_curso'] !== NULL && ($cantidadActual + 1) > $plan['max_archivos_por_curso']) {
+            $_SESSION['error'] = "Este curso ya alcanzó el máximo de {$plan['max_archivos_por_curso']} archivos permitidos en tu plan.";
+            header("Location: index.php?action=detalle_curso&id=" . $cursoId);
+            exit;
+        }
+
+        //verifica que no supere tamaño por archivo
+        if ($plan['max_bytes_por_archivo'] !== NULL && $peso > $plan['max_bytes_por_archivo']) {
+            $_SESSION['error'] = "El archivo supera los 5 MB permitidos por archivo en tu plan gratuito.";
+            header("Location: index.php?action=detalle_curso&id=" . $cursoId);
+            exit;
+        }
+
+        //verifica que no supere tamaño total por curso
+        if ($plan['max_bytes_total_cursos'] !== null && ($bytesUsados + $peso) > $plan['max_bytes_total_cursos']) {
+            $_SESSION['error'] = "Superas el límite global de 10 MB de almacenamiento de tu plan gratuito.";
+            header("Location: index.php?action=detalle_curso&id=" . $cursoId);
+            exit;
+        }
+
+        //define directorio destino, si no existe lo crea
+        $directorioDestino = __DIR__ . 'storage/material/';
+        if (!is_dir($directorioDestino)) {
+            mkdir($directorioDestino, 0777, true);
+        }
+
+        //cambio de nombre para que todo tengan un nombre difertente
+        $nombreUnico = uniqid('material_') . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $nombreOriginal);
+
+        //gaurda el archivo en la bdd
+        if (move_uploaded_file($_FILES['material']['tmp_name'], $directorioDestino . $nombreUnico)) {
+            Curso::guardarArchivo($cursoId, $nombreOriginal, 'storage/material/' . $nombreUnico, $peso);
+            $_SESSION['exito'] = "Material subido con éxito.";
+        } else {
+            $_SESSION['error'] = "Error al gaurdar el archivo en el servidor.";
+        }
+
+        //si llega aca, algo falló, lo lleva otra vez al detalle del curso
+        header("Location: index.php?action=detalle_curso&id=" . $cursoId);
+        exit;
     }
+
+
 
 
 }
