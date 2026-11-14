@@ -1,4 +1,7 @@
 <?php 
+// MODELO: acceso a la tabla usuarios.
+// Solo consultas a la base: no imprime HTML ni toca la sesión.
+
 require_once __DIR__ . '/../../config/conexion.php';
 
 class Curso {
