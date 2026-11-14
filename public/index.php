@@ -5,6 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../app/controllers/AuthController.php';
 require_once __DIR__ . '/../app/controllers/CursoController.php';
+require_once __DIR__ . '/../app/controllers/InscripcionController.php';
 
 $action = $_GET['action'] ?? 'home';
 
@@ -70,6 +71,15 @@ switch ($action) {
 
     case 'descargar_material':
         CursoController::descargarMaterial();
+        break;
+
+    // --- INSCRIPCIONES ---
+    case 'inscribirse':
+        InscripcionController::inscribir();
+        break;
+
+    case 'cambiar_estado_inscripcion':
+        InscripcionController::cambiarEstado();
         break;
 
     default:
