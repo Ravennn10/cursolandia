@@ -4,6 +4,8 @@ if(session_status() === PHP_SESSION_NONE){
 }
 
 require_once __DIR__ . '/../models/Curso.php';
+require_once __DIR__ . '/../models/Inscripcion.php';
+
 
 class CursoController {
     //controlar sesion para cosas que solo puede hacer un usuario logeado(no un invitado)
@@ -172,6 +174,15 @@ class CursoController {
 
         $archivos = Curso::obtenerArchivos($cursoId);
         $esCreador = ($curso['creador_id'] == $_SESSION['usuario_id']);
+        $ocupados = Inscripcion::contarInscriptosCurso($cursoId);
+
+        if($esCreador) {  //si es el creador
+            $miInscripcion = NULL; //no tiene inscripcion
+            $inscripcionesCurso = Inscripcion::obtenerAlumnosPorCurso($cursoId); //sy le muestra todos los inscriptos en su curso
+        } else {
+            $miInscripcion = Inscripcion::obtenerInscripcion($_SESSION['usuario_id'], $cursoId); 
+            $inscripcionesCurso = []; //no le muestra los edmas inscriptos a los alumnos
+        }
 
         require_once __DIR__ . '/../views/cursos/detalle.php';
     }
