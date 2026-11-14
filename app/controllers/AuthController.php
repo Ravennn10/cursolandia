@@ -26,16 +26,16 @@ class AuthController {
             if($usuario && password_verify($password, $usuario['password_hash'])) {
                 //inicia sesion y guarda datos
                 $_SESSION['usuario_id'] = $usuario['id'];
-                $_SESSION['usuario_nom'] = $usuario['nombre'] . ' ' . $usuario['apelldio'];
+                $_SESSION['usuario_nom'] = $usuario['nombre'] . ' ' . $usuario['apellido'];
                 $_SESSION['usuario_email'] = $usuario['email'];
                 $_SESSION['rol_id'] = $usuario['rol_id'];
                 $_SESSION['plan_id'] = $usuario['plan_id'];
                 $_SESSION['rol_nombre'] = $usuario['rol_nombre'];
                 
-                header("Location: index.php?action=catalogo");
+                header("Location: index.php?action=home");
                 exit;
             } else {
-                $_SESSION['error'] = "Credenciales Incorrectas";
+                $_SESSION['error'] = "Datos incorrectos!";
                 header("Location: index.php?action=login");
                 exit;
             }

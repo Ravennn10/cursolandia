@@ -1,4 +1,5 @@
 <?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,6 +10,8 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
+
 <body class="bg-cursolandia d-flex flex-column min-vh-100">
 
 <nav class="navbar navbar-expand-lg navbar-dark navbar-cursolandia shadow-sm mb-4">
@@ -30,10 +33,23 @@
                         <a class="nav-link" href="index.php?action=catalogo">Explorar Cursos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?action=crear_curso">+ Crear Curso</a>
+                        <a class="nav-link" href="index.php?action=mis_cursos">Mis Cursos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?action=perfil">Mi Perfil</a>
+                        <a class="nav-link" href="index.php?action=crear_curso">Crear Curso +</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="index.php?action=perfil" style="color: #B9F5D8;">
+                            👤 <?= htmlspecialchars($_SESSION['usuario_nom'] ?? 'Mi Perfil') ?>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light btn-sm px-3" href="index.php?action=logout">
+                            Cerrar Sesión
+                        </a>
                     </li>
                 </ul>
                 

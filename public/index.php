@@ -36,6 +36,11 @@ switch ($action) {
         AuthController::logout();
         break;
 
+    // --- PERFIL ---
+    case 'perfil':
+        require_once __DIR__ . '/../app/views/perfil/perfil_usuario.php';
+        break;
+
     // --- CURSOS ---
     case 'catalogo':
         CursoController::catalogo();
@@ -82,6 +87,7 @@ switch ($action) {
         InscripcionController::cambiarEstado();
         break;
 
+        
     default:
         CursoController::home();
         break;
