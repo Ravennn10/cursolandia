@@ -92,7 +92,8 @@ class InscripcionController {
             if($estado === 'confirmada') {
                 $_SESSION['exito'] = "Inscripción confirmada! ya tienes acceso a los amteriales del curso";
             } else {
-                $_SESSION['error'] = "SOlicitud enviada(pendiente). Al ser pago debe esperar confirmación.";
+                $_SESSION['exito'] = "¡Inscripción registrada con estado PENDIENTE!  Por favor, realiza la transferencia al CBU 1234567890 (Alias: CURSOLANDIA.TEST) y envía el comprobante a comprobantes@cursolandia.com
+                para que el creador confirme tu solicitud y active tu acceso al material.";
             }
         } else {
             $_SESSION['error'] = "Error al procesar la inscripción.";
