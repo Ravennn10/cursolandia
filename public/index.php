@@ -6,6 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../app/controllers/AuthController.php';
 require_once __DIR__ . '/../app/controllers/CursoController.php';
 require_once __DIR__ . '/../app/controllers/InscripcionController.php';
+require_once __DIR__ . '/../app/controllers/PerfilController.php';
 
 $action = $_GET['action'] ?? 'home';
 
@@ -39,6 +40,10 @@ switch ($action) {
     // --- PERFIL ---
     case 'perfil':
         require_once __DIR__ . '/../app/views/perfil/perfil_usuario.php';
+        break;
+
+    case 'mis_cursos':
+        PerfilController::misCursos();
         break;
 
     // --- CURSOS ---

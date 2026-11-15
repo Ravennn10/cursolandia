@@ -5,6 +5,7 @@
 require_once __DIR__ . '/../../config/conexion.php';
 
 class Curso {
+
     //obtener limites de plan (y verificar fecha de vencimiento)
     public static function obtenerPlanUsuario($usuarioId) {
         $db = conectar();
@@ -323,6 +324,25 @@ class Curso {
         //devuelve los datos del archivo si existe,  NULL/false si no lo encuentra
         return $archivo;
     }
+
+    //muestra todos los cursos creados de un usuario 
+    public static function obtenerCursosCreados($usuarioId) {
+        $db = conectar();
+        $sql = "SELECT c.* FROM cursos c WHERE c.creador_id = ? Order BY c.fecha_creacion DESC";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt,"i", $usuarioId);
+        mysqli_stmt_execute($stmt);
+        $lista = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
+
+        return $lista;
+    } 
+
+
+
+
 }
 
+    
 ?>

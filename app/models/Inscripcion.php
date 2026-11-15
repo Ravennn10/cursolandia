@@ -107,6 +107,25 @@ class Inscripcion {
         return $lista;
     }
 
+
+    //muestra todos los cursos en los que esta inscripto un usuario
+    public static function obtenerCursosPorAlumno($usuarioId) {
+        $db = conectar();
+        $sql = "SELECT c.id, c.titulo, c.costo, c.fecha_inicio, c.fecha_fin, u.nombre AS creador_nombre, 
+                u.apellido AS creador_apellido, u.plan_id AS creador_plan, i.estado AS estado_inscripcion
+                FROM inscripciones i JOIN cursos c ON i.curso_id = c.id JOIN usuarios u ON c.creador_id = u.id
+                WHERE i.usuario_id = ? 
+                ORDER BY c.fecha_inicio DESC";
+
+        $stmt = mysqli_prepare($db, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $usuarioId);
+        mysqli_stmt_execute($stmt);
+        $lista = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
+
+        return $lista;
+    }
+
 }
 
 ?>
