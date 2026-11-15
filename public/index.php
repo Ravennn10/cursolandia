@@ -11,10 +11,12 @@ require_once __DIR__ . '/../app/controllers/PerfilController.php';
 $action = $_GET['action'] ?? 'home';
 
 switch ($action) {
+    
     // --- INICIO ---
     case 'home':
         CursoController::home();
         break;
+
 
     // --- AUTENTICACIÓN ---
     case 'login':
@@ -37,15 +39,40 @@ switch ($action) {
         AuthController::logout();
         break;
 
+
     // --- PERFIL ---
     case 'perfil':
-        require_once __DIR__ . '/../app/views/perfil/perfil_usuario.php';
+        PerfilController::miPerfil();
         break;
 
     case 'mis_cursos':
         PerfilController::misCursos();
         break;
 
+    case 'actualizar_perfil';
+        PerfilController::actualizarPerfil();
+        break;
+
+    case 'actualizar_password':
+        PerfilController::actualizarPass();
+
+    case 'guardar_intereses':
+        PerfilController::guardarIntereses();
+        break;
+
+    case 'solicitar_pro':
+        PerfilController::solicitarPro();
+        break;
+
+    case 'gestionar_solicitud_pro':
+        PerfilController::gestionarSolicitudPro();
+        break;
+
+    case 'ver_comprobante':
+        PerfilController::verComprobante();
+        break;
+
+    
     // --- CURSOS ---
     case 'catalogo':
         CursoController::catalogo();
@@ -82,6 +109,7 @@ switch ($action) {
     case 'descargar_material':
         CursoController::descargarMaterial();
         break;
+
 
     // --- INSCRIPCIONES ---
     case 'inscribirse':
