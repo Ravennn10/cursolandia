@@ -38,7 +38,13 @@ require_once __DIR__ . '/../layouts/header.php';
                                     <?php endif; ?>
                                 </td>
                                 <td class="small">
-                                    <?= date('d/m/Y', strtotime($c['fecha_inicio'])) ?> - <?= date('d/m/Y', strtotime($c['fecha_fin'])) ?>
+                                    <div>
+                                        <?= date('d/m/Y', strtotime($c['fecha_inicio'])) ?> - 
+                                        <?= date('d/m/Y', strtotime($c['fecha_fin'])) ?>
+                                    </div>
+                                    <?php if ($c['fecha_fin'] < date('Y-m-d')): ?>
+                                        <span class="badge bg-secondary ms-1">Terminado</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <?= $c['costo'] > 0 ? '$ ' . number_format($c['costo'], 0, ',', '.') : '<span class="badge badge-gratis">Gratis</span>' ?>

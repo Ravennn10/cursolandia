@@ -18,8 +18,7 @@
                            placeholder="¿Qué querés aprender hoy? (Ej: PHP, MySQL, Diseño...)">
                 </div>
                 <div class="col-md-3 d-grid">
-                    <button type="submit" class="btn btn-lg fw-bold shadow-sm" 
-                            style="background-color: #B9F5D8; color: #052B2A;">
+                    <button type="submit" class="btn btn-lg fw-bold shadow-sm" style="background-color: #B9F5D8; color: #052B2A;">
                         Buscar cursos
                     </button>
                 </div>
@@ -64,30 +63,30 @@
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="h-100 p-4 rounded-4" style="background-color: #F4F6F5; border: 1px solid #AAD2BA;">
-                    <div class="fs-2 mb-2">🔍</div>
+                    <div class="fs-4 mb-2">🔍</div>
                     <h5 class="fw-bold text-evergreen">1. Explorá e inscribite</h5>
                     <p class="text-secondary small mb-0">
-                        Buscá cursos públicos o privados por título o etiquetas. Configurá tus intereses en tu perfil para recibir recomendaciones personalizadas y anotate en propuestas gratuitas o pagas.
+                        Buscá cursos por título o etiquetas. Configurá tus intereses en tu perfil para recibir recomendaciones personalizadas y anotate en propuestas gratuitas o pagas.
                     </p>
                 </div>
             </div>
 
             <div class="col-md-4">
                 <div class="h-100 p-4 rounded-4" style="background-color: #F4F6F5; border: 1px solid #AAD2BA;">
-                    <div class="fs-2 mb-2">📚</div>
+                    <div class="fs-4 mb-2">📚</div>
                     <h5 class="fw-bold text-evergreen">2. Creá tus propios cursos</h5>
                     <p class="text-secondary small mb-0">
-                        Publicá tus cursos definiendo fechas, cupos y costo. Compartí material de estudio descargable con tus alumnos y confirmá las inscripciones cuando corresponda.
+                        Publicá tus cursos definiendo fechas, cupos y costo. Compartí material de estudio descargable con tus alumnos y gestioná las inscripciones pagas.
                     </p>
                 </div>
             </div>
 
             <div class="col-md-4">
                 <div class="h-100 p-4 rounded-4" style="background-color: #F4F6F5; border: 1px solid #AAD2BA;">
-                    <div class="fs-2 mb-2">💬</div>
+                    <div class="fs-4 mb-2">💬</div>
                     <h5 class="fw-bold text-evergreen">3. Foro y Plan PRO</h5>
                     <p class="text-secondary small mb-0">
-                        Resolvé dudas en el foro de cada curso con respuestas aceptadas y notificaciones en tiempo real. Con el <strong>Plan PRO</strong> creás e inscribís sin límites y destacás tus cursos.
+                        Resolvé dudas en el foro de cada curso con respuestas aceptadas y notificaciones en tiempo real. Con el <strong>Plan PRO</strong> creás(destacados) y te inscribís sin límites.
                     </p>
                 </div>
             </div>

@@ -16,7 +16,7 @@ $puedeDescargar = ($esCreador || ($miInscripcion && $miInscripcion['estado'] ===
     <a href="index.php?action=catalogo" class="link-cursolandia">&larr; Volver al catálogo</a>
 </div>
 
-<!-- INFORMACIÓN DEL CURSO -->
+<!--  -->
 <div class="card mb-4 <?= $curso['creador_plan'] == 2 ? 'card-cursolandia-pro' : 'card-cursolandia' ?>">
     <div class="card-header card-header-cursolandia d-flex justify-content-between align-items-center">
         <span>
@@ -39,13 +39,18 @@ $puedeDescargar = ($esCreador || ($miInscripcion && $miInscripcion['estado'] ===
         <?php endif; ?>
     </div>
 
+<!-- CONTENIDO DEL CURSO -->
     <div class="card-body">
         <h3 class="text-evergreen mb-1"><?= htmlspecialchars($curso['titulo']) ?></h3>
         <p class="text-muted small mb-3">
             Docente: <strong><?= htmlspecialchars($curso['creador_nombre'] . ' ' . $curso['creador_apellido']) ?></strong> |
             Inicio: <?= date('d/m/Y', strtotime($curso['fecha_inicio'])) ?> |
             Fin: <?= date('d/m/Y', strtotime($curso['fecha_fin'])) ?>
+            <?php if ($curso['fecha_fin'] < date('Y-m-d')): ?>
+                <span class="badge bg-secondary ms-1">Terminado</span>
+            <?php endif; ?>
         </p>
+        
 
         <p><?= nl2br(htmlspecialchars($curso['descripcion'])) ?></p>
 
