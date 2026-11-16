@@ -385,7 +385,7 @@ class CursoController {
             $cursoId = (int)($_POST['curso_id'] ?? 0);
             $curso = Curso::obtenerPorId($cursoId);
 
-            if($curso && $curso['craedor_id'] == $_SESSION['usuario_id']){
+            if($curso && $curso['creador_id'] == $_SESSION['usuario_id']){
                 Curso::eliminarCurso($cursoId);
                 $_SESSION['exito'] = "Curso eliminado!";
             } else {

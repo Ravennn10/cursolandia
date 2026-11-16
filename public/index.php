@@ -7,6 +7,7 @@ require_once __DIR__ . '/../app/controllers/AuthController.php';
 require_once __DIR__ . '/../app/controllers/CursoController.php';
 require_once __DIR__ . '/../app/controllers/InscripcionController.php';
 require_once __DIR__ . '/../app/controllers/PerfilController.php';
+require_once __DIR__ . '/../app/controllers/ForoController.php';
 
 $action = $_GET['action'] ?? 'home';
 
