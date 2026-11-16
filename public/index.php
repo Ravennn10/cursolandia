@@ -120,6 +120,28 @@ switch ($action) {
         InscripcionController::cambiarEstado();
         break;
 
+
+    // --- FORO ---
+     case 'crear_pregunta':
+        ForoController::crearPregunta();
+        break;
+
+    case 'crear_respuesta':
+        ForoController::crearRespuesta();
+        break;
+
+    case 'aceptar_respuesta':
+        ForoController::aceptarRespuesta();
+        break;
+
+    case 'eliminar_pregunta':
+        ForoController::eliminarPregunta();
+        break;
+
+    case 'leer_notificaciones':
+        ForoController::leerNotificaciones();
+        break;
+        
         
     default:
         CursoController::home();

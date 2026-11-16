@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-11-2026 a las 18:10:25
+-- Tiempo de generación: 16-11-2026 a las 00:19:37
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -16,10 +16,6 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
-
--- Crear la base de datos si no existe y seleccionarla
-CREATE DATABASE IF NOT EXISTS cursolandia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE cursolandia;
 
 --
 -- Base de datos: `cursolandia`
@@ -137,7 +133,7 @@ CREATE TABLE `inscripciones` (
   `id` int(10) UNSIGNED NOT NULL,
   `curso_id` int(10) UNSIGNED NOT NULL,
   `usuario_id` int(10) UNSIGNED NOT NULL,
-  `estado` enum('pendiente','confirmada','cancelada') NOT NULL DEFAULT 'confirmada',
+  `estado` enum('pendiente','confirmada','rechazada') NOT NULL DEFAULT 'confirmada',
   `fecha_inscripcion` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -151,7 +147,9 @@ INSERT INTO `inscripciones` (`id`, `curso_id`, `usuario_id`, `estado`, `fecha_in
 (3, 1, 5, 'confirmada', '2026-11-11 16:22:34'),
 (5, 2, 5, 'confirmada', '2026-11-11 16:22:34'),
 (6, 3, 3, 'confirmada', '2026-11-11 16:22:34'),
-(8, 4, 4, 'confirmada', '2026-11-11 16:22:34');
+(8, 4, 4, 'confirmada', '2026-11-11 16:22:34'),
+(14, 2, 4, 'rechazada', '2026-11-15 05:29:42'),
+(15, 4, 11, 'confirmada', '2026-11-16 00:18:00');
 
 -- --------------------------------------------------------
 
@@ -176,12 +174,12 @@ CREATE TABLE `notificaciones` (
 --
 
 INSERT INTO `notificaciones` (`id`, `usuario_id`, `actor_id`, `curso_id`, `pregunta_id`, `tipo`, `mensaje`, `leida`, `fecha`) VALUES
-(1, 1, 4, 1, 1, 'pregunta_nueva', 'Martín Rojas hizo una pregunta nueva en \"Introducción a PHP y MySQL\".', 1, '2026-11-11 16:27:55'),
+(1, 11, 4, 1, 1, 'pregunta_nueva', 'Martín Rojas hizo una pregunta nueva en \"Introducción a PHP y MySQL\".', 1, '2026-11-11 16:27:55'),
 (2, 3, 4, 1, 1, 'pregunta_nueva', 'Martín Rojas hizo una pregunta nueva en \"Introducción a PHP y MySQL\".', 0, '2026-11-11 16:27:55'),
 (3, 5, 4, 1, 1, 'pregunta_nueva', 'Martín Rojas hizo una pregunta nueva en \"Introducción a PHP y MySQL\".', 0, '2026-11-11 16:27:55'),
 (4, 4, 1, 1, 1, 'respuesta_nueva', 'Tu pregunta \"¿Diferencia entre mysqli y PDO?\" tiene una respuesta nueva.', 1, '2026-11-11 16:27:55'),
 (5, 4, 5, 1, 1, 'respuesta_nueva', 'Sofía Díaz respondió en \"¿Diferencia entre mysqli y PDO?\".', 0, '2026-11-11 16:27:55'),
-(6, 1, 5, 1, 1, 'respuesta_nueva', 'Sofía Díaz respondió en \"¿Diferencia entre mysqli y PDO?\".', 1, '2026-11-11 16:27:55'),
+(6, 11, 5, 1, 1, 'respuesta_nueva', 'Sofía Díaz respondió en \"¿Diferencia entre mysqli y PDO?\".', 1, '2026-11-11 16:27:55'),
 (7, 4, 1, 1, 1, 'pregunta_cerrada', 'La pregunta \"¿Diferencia entre mysqli y PDO?\" fue cerrada con una respuesta aceptada.', 0, '2026-11-11 16:27:55'),
 (8, 5, 1, 1, 1, 'pregunta_cerrada', 'La pregunta \"¿Diferencia entre mysqli y PDO?\" fue cerrada con una respuesta aceptada.', 0, '2026-11-11 16:27:55');
 
@@ -234,7 +232,7 @@ INSERT INTO `preguntas` (`id`, `curso_id`, `autor_id`, `titulo`, `contenido`, `d
 (1, 1, 4, '¿Diferencia entre mysqli y PDO?', '¿Cuál conviene usar en el trabajo integrador y por qué?', 0, 3, '2026-11-11 16:24:02'),
 (2, 1, 5, '¿Cómo evito la inyección SQL?', 'Quiero asegurarme de que mi formulario de login sea seguro.', 1, NULL, '2026-11-11 16:24:02'),
 (3, 2, 5, '¿Qué versión de Bootstrap usamos?', '¿Trabajamos con la versión 5 o con la 4?', 0, NULL, '2026-11-11 16:24:02'),
-(4, 4, 1, '¿Las clases quedan grabadas?', 'Me gustaría poder repasar el material después de cada clase.', 0, NULL, '2026-11-11 16:24:02');
+(4, 4, 11, '¿Las clases quedan grabadas?', 'Me gustaría poder repasar el material después de cada clase.', 0, NULL, '2026-11-11 16:24:02');
 
 -- --------------------------------------------------------
 
@@ -256,10 +254,10 @@ CREATE TABLE `respuestas` (
 --
 
 INSERT INTO `respuestas` (`id`, `pregunta_id`, `autor_id`, `contenido`, `fecha_creada`, `fecha_editada`) VALUES
-(1, 1, 1, 'Ambas sirven. Para esta materia te conviene mysqli procedural.', '2026-11-11 16:25:36', NULL),
+(1, 1, 11, 'Ambas sirven. Para esta materia te conviene mysqli procedural.', '2026-11-11 16:25:36', NULL),
 (2, 1, 5, 'Yo también uso mysqli, es lo que vemos en clase.', '2026-11-11 16:25:36', NULL),
-(3, 1, 1, 'Exacto, usá mysqli con consultas preparadas.', '2026-11-11 16:25:36', NULL),
-(4, 2, 1, 'Usá siempre consultas preparadas con mysqli_prepare.', '2026-11-11 16:25:36', NULL),
+(3, 1, 11, 'Exacto, usá mysqli con consultas preparadas.', '2026-11-11 16:25:36', NULL),
+(4, 2, 11, 'Usá siempre consultas preparadas con mysqli_prepare.', '2026-11-11 16:25:36', NULL),
 (5, 2, 4, 'Y nunca concatenes variables dentro del SQL.', '2026-11-11 16:25:36', NULL),
 (6, 3, 3, 'Usamos Bootstrap 5, la versión actual.', '2026-11-11 16:25:36', NULL),
 (7, 4, 4, 'Sí, las grabaciones se suben al final de cada semana.', '2026-11-11 16:25:36', NULL);
@@ -293,8 +291,8 @@ CREATE TABLE `solicitudes_pro` (
   `id` int(10) UNSIGNED NOT NULL,
   `usuario_id` int(10) UNSIGNED NOT NULL,
   `mensaje` text NOT NULL,
-  `adjunto_ruta` varchar(255) DEFAULT NULL,
-  `estado` enum('pendiente','aprobado','rechazado') NOT NULL DEFAULT 'pendiente',
+  `ruta_comprobante` varchar(255) DEFAULT NULL,
+  `estado` enum('pendiente','aprobada','rechazada') NOT NULL DEFAULT 'pendiente',
   `admin_id` int(10) UNSIGNED DEFAULT NULL,
   `fecha_vencimiento` date DEFAULT NULL,
   `fecha_solicitud` datetime NOT NULL DEFAULT current_timestamp()
@@ -304,9 +302,9 @@ CREATE TABLE `solicitudes_pro` (
 -- Volcado de datos para la tabla `solicitudes_pro`
 --
 
-INSERT INTO `solicitudes_pro` (`id`, `usuario_id`, `mensaje`, `adjunto_ruta`, `estado`, `admin_id`, `fecha_vencimiento`, `fecha_solicitud`) VALUES
-(5, 4, 'Les envío el comprobante de la transferencia.', 'pagos/comprobantes/comprobante_martin.jpg', 'pendiente', NULL, NULL, '2026-11-11 16:11:08'),
-(6, 5, 'Realicé el pago, adjunto la captura.', 'pagos/comprobantes/comprobante_sofia.png', 'rechazado', NULL, NULL, '2026-11-11 16:11:08');
+INSERT INTO `solicitudes_pro` (`id`, `usuario_id`, `mensaje`, `ruta_comprobante`, `estado`, `admin_id`, `fecha_vencimiento`, `fecha_solicitud`) VALUES
+(5, 4, 'Les envío el comprobante de la transferencia.', 'pagos/comprobante_martin.jpg', 'rechazada', 1, NULL, '2026-11-11 16:11:08'),
+(7, 5, 'envio comprobante', 'storage/pagos/pago_6af969c399845_comprobanteSofia.png', 'aprobada', 1, '2026-12-15', '2026-11-15 05:13:55');
 
 -- --------------------------------------------------------
 
@@ -333,10 +331,10 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `rol_id`, `plan_id`, `nombre`, `apellido`, `email`, `password_hash`, `antecedentes`, `imagen_perfil`, `fecha_registro`, `plan_vence_en`) VALUES
-(1, 2, 1, 'ADMIN', 'SYSTEM', 'admin1@gmail.com', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 14:55:21', NULL),
+(1, 2, 1, 'ADMIN', 'SYSTEM', 'admin1@gmail.com', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', '', 'uploads/perfil1_6af96c5815d3e.png', '2026-11-11 14:55:21', NULL),
 (3, 1, 2, 'Laura', 'Gómez', 'laurapro@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 16:05:25', '2027-12-31'),
-(4, 1, 1, 'Martín', 'Rojas', 'martin@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 16:05:25', NULL),
-(5, 1, 1, 'Sofía', 'Díaz', 'sofia@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 16:05:25', NULL),
+(4, 1, 1, 'Martín', 'Rojas', 'martin@cursolandia.test', '$2y$10$wqGVYzJztfFHF8gPQNV/degPaOwGQw3g1xrIepW7QphoDUpKlqtqG', NULL, NULL, '2026-11-11 16:05:25', NULL),
+(5, 1, 2, 'Sofía', 'Díaz', 'sofia@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', '', 'uploads/perfil5_6af96aee78c6a.png', '2026-11-11 16:05:25', '2026-12-15'),
 (11, 1, 1, 'Abril', 'Test', 'abril@gmail.com', '$2y$10$1ETiA5irFZbkfYzIE6LnwOgy1VrlAZTnlxvHx5hf.EAl/OEi8UpXO', NULL, NULL, '2026-11-12 23:11:25', NULL);
 
 -- --------------------------------------------------------
@@ -495,7 +493,7 @@ ALTER TABLE `etiquetas`
 -- AUTO_INCREMENT de la tabla `inscripciones`
 --
 ALTER TABLE `inscripciones`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
@@ -531,7 +529,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `solicitudes_pro`
 --
 ALTER TABLE `solicitudes_pro`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
