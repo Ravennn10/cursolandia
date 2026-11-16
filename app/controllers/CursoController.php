@@ -5,6 +5,7 @@ if(session_status() === PHP_SESSION_NONE){
 
 require_once __DIR__ . '/../models/Curso.php';
 require_once __DIR__ . '/../models/Inscripcion.php';
+require_once __DIR__ . '/../models/Foro.php';
 
 
 class CursoController {
@@ -183,6 +184,8 @@ class CursoController {
             $miInscripcion = Inscripcion::obtenerInscripcion($_SESSION['usuario_id'], $cursoId); 
             $inscripcionesCurso = []; //no le muestra los edmas inscriptos a los alumnos
         }
+
+        $preguntas = Foro::obtenerPreguntasYRespuestas($cursoId);
 
         require_once __DIR__ . '/../views/cursos/detalle.php';
     }

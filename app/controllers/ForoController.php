@@ -6,7 +6,6 @@ if(session_status() === PHP_SESSION_NONE){
 require_once __DIR__ . '/../models/Foro.php';
 require_once __DIR__ . '/../models/Curso.php';
 require_once __DIR__ . '/../models/Inscripcion.php';
-require_once __DIR__ . '/../models/Usuario.php';
 
 
 class ForoController {
@@ -44,7 +43,7 @@ class ForoController {
         $curso = Curso::obtenerPorId($cursoId);
 
         //si el curso no existe o el usuario no puede participar...
-        if(!$curso || self::puedeParticipar($usuarioId, $curso)){
+        if(!$curso || !self::puedeParticipar($usuarioId, $curso)){
             $_SESSION['error'] = "No puede participar en el foro!";
             header("Location: index.php?action=detalle_curso&id=". $cursoId);
             exit;
@@ -66,7 +65,7 @@ class ForoController {
 
         if($preguntaId) {
             //evita notificar al autor de la pregunta
-            $nombreAutor = $_SESSION['usuario_nombre'] ?? 'anónimo';
+            $nombreAutor = $_SESSION['usuario_nom'] ?? 'anónimo';
             $participantes = Foro::obtenerParticipantesCurso($cursoId);
 
             foreach($participantes as $receptorId){
@@ -130,7 +129,7 @@ class ForoController {
         }
 
         if(Foro::crearRespuesta($preguntaId, $usuarioId, $contenido)){
-            $nombreAutor = $_SESSION['usuarion_nombre'] ?? 'anonimo';
+            $nombreAutor = $_SESSION['usuario_nom'] ?? 'anonimo';
             $participantes = Foro::obtenerParticipantesPregunta($preguntaId);
 
             //notifica solo a lso participantes de la pregunta(menos al autor)
@@ -227,8 +226,8 @@ class ForoController {
         $usuario = Usuario::ObtenerPorId($usuarioId);
         $esAdmin = ((int)($usuario['rol_id'] ?? 0) === 2);
 
-        //solo puede eliminar el autor de la pregunta, el creador del curso o el admin
-        if ($pregunta['autor_id'] != $usuarioId && $curso['creador_id'] != $usuarioId && !$esAdmin) {
+        //solo puede eliminar el autor de la pregunta o el creador del curso 
+        if ($pregunta['autor_id'] != $usuarioId && $curso['creador_id'] != $usuarioId ) {
             $_SESSION['error'] = "No tenés permiso para eliminar esta pregunta.";
             header("Location: index.php?action=detalle_curso&id=" . $pregunta['curso_id']);
             exit;

@@ -6,6 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../models/Usuario.php';
 require_once __DIR__ . '/../models/Curso.php';
 require_once __DIR__ . '/../models/Inscripcion.php';
+require_once __DIR__ . '/../models/Foro.php';
 
 class PerfilController {
 
@@ -38,6 +39,8 @@ class PerfilController {
         $esAdmin = ((int)($usuario['rol_id'] ?? 0) === 2); //valida si es admin por el id de rol
 
         $solicitudesPendientes = $esAdmin ? Usuario::obtenerSolicitudesProPendientes() : [];
+
+        $notificaciones = Foro::obtenerNotificacionesUsuario($usuarioId);
 
         require_once __DIR__ . '/../views/perfil/perfil_usuario.php';
 

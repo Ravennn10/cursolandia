@@ -18,7 +18,7 @@ class Foro {
         mysqli_stmt_close($stmt);
 
         //carga respuesta a cada pregunta
-        foreach($preguntas as $preg) {
+        foreach($preguntas as &$preg) {
             $sqlResp = "SELECT r.*, u.nombre, u.apellido FROM respuestas r JOIN usuarios u ON r.autor_id = u.id
                         WHERE r.pregunta_id = ? ORDER BY r.fecha_creada ASC";
 
@@ -29,6 +29,7 @@ class Foro {
             mysqli_stmt_close($stmtResp);
              
         }
+        unset($preg); //se pone & para que tome todos los valores del foreach por referencia, se usa unset para poder usarla mas adelante sin problemas.
 
         return $preguntas;
     }
@@ -137,6 +138,12 @@ class Foro {
     //eliminar una pregunta completa(con sus respuestas)
     public static function eliminarPregunta($preguntaId) {
         $db = conectar();
+
+        //desvincula notificaciones(por fk)
+        $stmtNotif = mysqli_prepare($db, "UPDATE notificaciones SET pregunta_id = NULL WHERE pregunta_id = ?");
+        mysqli_stmt_bind_param($stmtNotif, "i", $preguntaId);
+        mysqli_stmt_execute($stmtNotif);
+        mysqli_stmt_close($stmtNotif);
 
         //quita referencia de respuesta aceptada para evitar bloqueo por fk
         $stmt = mysqli_prepare($db, "UPDATE preguntas SET respuesta_aceptada_id = NULL WHERE id = ?");
