@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-11-2026 a las 02:04:35
+-- Tiempo de generación: 16-11-2026 a las 04:04:34
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,9 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `cursolandia`
 --
+
+CREATE DATABASE IF NOT EXISTS `cursolandia` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `cursolandia`;
 
 -- --------------------------------------------------------
 
@@ -38,7 +41,7 @@ CREATE TABLE `cursos` (
   `fecha_inicio` date NOT NULL,
   `fecha_fin` date NOT NULL,
   `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `cursos`
@@ -65,7 +68,7 @@ CREATE TABLE `curso_archivos` (
   `ruta_archivo` varchar(255) NOT NULL,
   `peso_bytes` int(10) UNSIGNED NOT NULL,
   `fecha_subida` datetime NOT NULL DEFAULT current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `curso_archivos`
@@ -167,7 +170,7 @@ CREATE TABLE `notificaciones` (
   `mensaje` varchar(255) NOT NULL,
   `leida` tinyint(1) NOT NULL DEFAULT 0,
   `fecha` datetime NOT NULL DEFAULT current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `notificaciones`
@@ -222,7 +225,7 @@ CREATE TABLE `preguntas` (
   `destacada` tinyint(1) NOT NULL DEFAULT 0,
   `respuesta_aceptada_id` int(10) UNSIGNED DEFAULT NULL,
   `fecha_creada` datetime NOT NULL DEFAULT current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `preguntas`
@@ -475,13 +478,13 @@ ALTER TABLE `usuarios_intereses`
 -- AUTO_INCREMENT de la tabla `cursos`
 --
 ALTER TABLE `cursos`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `curso_archivos`
 --
 ALTER TABLE `curso_archivos`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `etiquetas`
@@ -499,7 +502,7 @@ ALTER TABLE `inscripciones`
 -- AUTO_INCREMENT de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `planes`
@@ -511,7 +514,7 @@ ALTER TABLE `planes`
 -- AUTO_INCREMENT de la tabla `preguntas`
 --
 ALTER TABLE `preguntas`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `respuestas`
