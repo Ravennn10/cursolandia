@@ -1,4 +1,12 @@
-<?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+ 
+$noLeidas = 0;
+if(isset($_SESSION['usuario_id'])) {
+    require_once __DIR__ . '/../../models/Foro.php';
+    $noLeidas= Foro::contarNoLeidas($_SESSION['usuario_id']);
+}
+?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -44,6 +52,9 @@
                     <li class="nav-item">
                         <a class="nav-link fw-semibold" href="index.php?action=perfil" style="color: #B9F5D8;">
                             👤 <?= htmlspecialchars($_SESSION['usuario_nom'] ?? 'Mi Perfil') ?>
+                            <?php if ($noLeidas > 0): ?>
+                                <span class="badge bg-danger ms-1"><?= $noLeidas ?></span>
+                            <?php endif; ?>
                         </a>
                     </li>
                     <li class="nav-item">

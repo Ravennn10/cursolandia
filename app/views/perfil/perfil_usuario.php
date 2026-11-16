@@ -4,6 +4,8 @@
 /** @var array|null $ultimaSolicitud */
 /** @var bool $esAdmin */
 /** @var array $solicitudesPendientes */
+/** @var array $notificaciones */
+
 require_once __DIR__ . '/../layouts/header.php';
 
 $esProActivo = ($usuario['plan_id'] == 2 && (empty($usuario['plan_vence_en']) || $usuario['plan_vence_en'] >= date('Y-m-d')));
@@ -46,6 +48,44 @@ $esProActivo = ($usuario['plan_id'] == 2 && (empty($usuario['plan_vence_en']) ||
             <?php endif; ?>
         </div>
     </div>
+    
+    <!-- notif -->
+    <div class="card card-cursolandia mb-4">
+        <div class="card-header card-header-cursolandia d-flex justify-content-between align-items-center">
+            <span>Notificaciones</span>
+
+            <?php if (!empty($notificaciones)): ?>
+                <form action="index.php?action=leer_notificaciones" method="POST" class="m-0">
+                    <button type="submit" class="btn btn-sm btn-light py-0">Marcar como leídas</button>
+                </form>
+            <?php endif; ?>
+        </div>
+        <div class="card-body">
+
+            <?php if (empty($notificaciones)): ?>
+                <p class="text-muted small mb-0">No tenés notificaciones.</p>
+            <?php else: ?>
+                <ul class="list-group list-group-flush">
+
+                    <?php foreach ($notificaciones as $n): ?>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 <?= $n['leida'] == 0 ? 'fw-bold' : 'text-muted' ?>">
+                            
+                            <div class="small">
+                                <?= htmlspecialchars($n['mensaje']) ?>
+                                <span class="d-block text-muted fw-normal" style="font-size: 0.78rem;">
+                                    Curso: <?= htmlspecialchars($n['curso_titulo']) ?> | <?= date('d/m/Y H:i', strtotime($n['fecha'])) ?>
+                                </span>
+                            </div>
+                            <a href="index.php?action=detalle_curso&id=<?= $n['curso_id'] ?>" class="btn btn-sm btn-outline-evergreen ms-2">
+                                Ver curso
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+        </div>
+    </div>
+
 
     <!-- datos -->
     <div class="card card-cursolandia mb-4">

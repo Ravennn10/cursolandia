@@ -5,6 +5,8 @@
 /** @var int $ocupados */
 /** @var array|null $miInscripcion */
 /** @var array $inscripcionesCurso */
+/** @var array $preguntas */
+
 require_once __DIR__ . '/../layouts/header.php';
 
 $cursoFinalizado = ($curso['fecha_fin'] < date('Y-m-d'));
@@ -219,5 +221,101 @@ $puedeDescargar = ($esCreador || ($miInscripcion && $miInscripcion['estado'] ===
         </div>
     </div>
 <?php endif; ?>
+
+<!-- FORO  -->
+<div class="card card-cursolandia mb-4">
+    <div class="card-header card-header-cursolandia">
+        Foro del Curso
+    </div>
+    <div class="card-body">
+        <?php if (!$puedeDescargar): ?>
+            <p class="text-muted mb-0">Debés tener una inscripción confirmada para participar en el foro.</p>
+        <?php else: ?>
+
+            <!-- FORM pregunta nueva -->
+            <form action="index.php?action=crear_pregunta" method="POST" class="mb-3">
+                <input type="hidden" name="curso_id" value="<?= $curso['id'] ?>">
+                <div class="mb-2">
+                    <label class="form-label fw-bold text-evergreen">Nueva pregunta</label>
+                    <input type="text" name="titulo" class="form-control form-control-sm" placeholder="Título de la pregunta" required>
+                </div>
+                <div class="mb-2">
+                    <textarea name="contenido" class="form-control form-control-sm" rows="2" placeholder="Escribí tu consulta..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-evergreen btn-sm">Publicar pregunta</button>
+            </form>
+
+            <hr>
+
+            <!-- lista preguntas -->
+            <?php if (empty($preguntas)): ?>
+                <p class="text-muted mb-0">No hay preguntas todavía.</p>
+            <?php else: ?>
+                <?php foreach ($preguntas as $p): ?>
+                    <div class="border p-2 mb-3">
+                        <div>
+                            <strong><?= htmlspecialchars($p['titulo']) ?></strong>
+                            <?php if ($p['destacada'] == 1): ?>
+                                <span class="badge badge-pro">Destacada</span>
+                            <?php endif; ?>
+                            <?php if (!empty($p['respuesta_aceptada_id'])): ?>
+                                <span class="badge bg-danger">Cerrada</span>
+                            <?php endif; ?>
+                            <br>
+                            <small class="text-muted">
+                                Publicada por <?= htmlspecialchars($p['nombre'] . ' ' . $p['apellido']) ?> (<?= date('d/m/Y H:i', strtotime($p['fecha_creada'])) ?>)
+                            </small>
+                        </div>
+
+                        <p class="mt-2 mb-2"><?= nl2br(htmlspecialchars($p['contenido'])) ?></p>
+
+                        <?php if ($p['autor_id'] == $_SESSION['usuario_id'] || $esCreador): ?>
+                            <form action="index.php?action=eliminar_pregunta" method="POST" class="mb-2" onsubmit="return confirm('¿Eliminar esta pregunta?');">
+                                <input type="hidden" name="pregunta_id" value="<?= $p['id'] ?>">
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar pregunta</button>
+                            </form>
+                        <?php endif; ?>
+
+                        <!-- respuestas -->
+                        <div class="ms-4 mt-2">
+                            <?php foreach ($p['respuestas'] as $r): ?>
+                                <?php $esAceptada = ($p['respuesta_aceptada_id'] == $r['id']); ?>
+                                <div class="border-top pt-2 mt-2">
+                                    <strong><?= htmlspecialchars($r['nombre'] . ' ' . $r['apellido']) ?></strong>
+                                    <?php if ($esAceptada): ?>
+                                        <span class="badge bg-success">Respuesta aceptada</span>
+                                    <?php endif; ?>
+                                    <small class="text-muted">- <?= date('d/m/Y H:i', strtotime($r['fecha_creada'])) ?></small>
+
+                                    <p class="mb-1"><?= nl2br(htmlspecialchars($r['contenido'])) ?></p>
+
+                                    <?php if (empty($p['respuesta_aceptada_id']) && ($p['autor_id'] == $_SESSION['usuario_id'] || $esCreador)): ?>
+                                        <form action="index.php?action=aceptar_respuesta" method="POST" class="mb-1">
+                                            <input type="hidden" name="pregunta_id" value="<?= $p['id'] ?>">
+                                            <input type="hidden" name="respuesta_id" value="<?= $r['id'] ?>">
+                                            <button type="submit" class="btn btn-outline-success btn-sm">Aceptar respuesta y cerrar</button>
+                                        </form>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+
+                            <!-- FORM responder (si sigue abierta) -->
+                            <?php if (empty($p['respuesta_aceptada_id'])): ?>
+                                <form action="index.php?action=crear_respuesta" method="POST" class="mt-2">
+                                    <input type="hidden" name="pregunta_id" value="<?= $p['id'] ?>">
+                                    <input type="text" name="contenido" class="form-control form-control-sm mb-1" placeholder="Escribir respuesta..." required>
+                                    <button type="submit" class="btn btn-olive btn-sm">Responder</button>
+                                </form>
+                            <?php else: ?>
+                                <small class="text-muted d-block mt-2">Pregunta cerrada.</small>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+
+        <?php endif; ?>
+    </div>
+</div>
 
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
