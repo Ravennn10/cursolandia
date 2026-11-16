@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-11-2026 a las 00:19:37
+-- Tiempo de generación: 16-11-2026 a las 02:04:35
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -303,8 +303,8 @@ CREATE TABLE `solicitudes_pro` (
 --
 
 INSERT INTO `solicitudes_pro` (`id`, `usuario_id`, `mensaje`, `ruta_comprobante`, `estado`, `admin_id`, `fecha_vencimiento`, `fecha_solicitud`) VALUES
-(5, 4, 'Les envío el comprobante de la transferencia.', 'pagos/comprobante_martin.jpg', 'rechazada', 1, NULL, '2026-11-11 16:11:08'),
-(7, 5, 'envio comprobante', 'storage/pagos/pago_6af969c399845_comprobanteSofia.png', 'aprobada', 1, '2026-12-15', '2026-11-15 05:13:55');
+(7, 5, 'envio comprobante', 'storage/pagos/pago_6af969c399845_comprobanteSofia.png', 'aprobada', 1, '2026-12-15', '2026-11-15 05:13:55'),
+(8, 4, 'anjunto comprobante de pago', 'storage/pagos/pago_6afa8a461de8b_comprobanteMartin.png', 'pendiente', NULL, NULL, '2026-11-16 01:44:54');
 
 -- --------------------------------------------------------
 
@@ -334,7 +334,7 @@ INSERT INTO `usuarios` (`id`, `rol_id`, `plan_id`, `nombre`, `apellido`, `email`
 (1, 2, 1, 'ADMIN', 'SYSTEM', 'admin1@gmail.com', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', '', 'uploads/perfil1_6af96c5815d3e.png', '2026-11-11 14:55:21', NULL),
 (3, 1, 2, 'Laura', 'Gómez', 'laurapro@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', NULL, NULL, '2026-11-11 16:05:25', '2027-12-31'),
 (4, 1, 1, 'Martín', 'Rojas', 'martin@cursolandia.test', '$2y$10$wqGVYzJztfFHF8gPQNV/degPaOwGQw3g1xrIepW7QphoDUpKlqtqG', NULL, NULL, '2026-11-11 16:05:25', NULL),
-(5, 1, 2, 'Sofía', 'Díaz', 'sofia@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', '', 'uploads/perfil5_6af96aee78c6a.png', '2026-11-11 16:05:25', '2026-12-15'),
+(5, 1, 2, 'Sofía', 'Díaz', 'sofia@cursolandia.test', '$2y$10$Xm98xp9aoZWjX3kOkysTAOfNLGzDnMBU8KjlKSnAm9DsLBVkNPP0i', '', 'uploads/perfil5_6afa8cfbac178.png', '2026-11-11 16:05:25', '2026-12-15'),
 (11, 1, 1, 'Abril', 'Test', 'abril@gmail.com', '$2y$10$1ETiA5irFZbkfYzIE6LnwOgy1VrlAZTnlxvHx5hf.EAl/OEi8UpXO', NULL, NULL, '2026-11-12 23:11:25', NULL);
 
 -- --------------------------------------------------------
@@ -529,7 +529,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `solicitudes_pro`
 --
 ALTER TABLE `solicitudes_pro`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`

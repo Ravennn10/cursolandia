@@ -1,7 +1,8 @@
 #Estructura base del proyecto de cursolandia
 
 #Usuarios de prueba
-admin - admin1@gmail.com - 12345
-usuario gratis - martin@cursolandia.test - 12345
-usuario pro - laurapro@gmial.com - 12345
-ususario gratis(en el limite con 3 inscripciones) abril@gmail.com - 12345
+ADMIN - admin1@gmail.com - 12345 (el unico que gestiona solicitudes pro)
+usuario pro - laurapro@gmail.com - 12345
+usuario gratis - martin@cursolandia.test - 123456
+usuario pro - sofia@cursolandia.test - 12345
+ususario gratis abril@gmail.com - 123
